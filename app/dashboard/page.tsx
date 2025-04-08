@@ -1,92 +1,56 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
-import Papa from "papaparse";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+'use client';
 
-export default function Dashboard() {
-  const [isAuth, setIsAuth] = useState<boolean | null>(null);
-  const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface User {
+  email: string;
+  role: 'admin' | 'student';
+  [key: string]: any; // Extend this based on your JWT payload
+}
+
+export default function DashboardPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const acceptableFileInputcsv = ".csv, .txt, .tsv, .xls, .xlsx, .json";
-
-  const onFileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const csvFile = e.target.files?.[0];
-    if (!csvFile) return;
-
-    Papa.parse<Record<string, string>>(csvFile, {
-      skipEmptyLines: true,
-      header: true,
-      complete: function (result : any) {
-        setCsvData(result.data);
-      },
-    });
-  };
 
   useEffect(() => {
-    async function checkAuth() {
+    const fetchUser = async () => {
       try {
-        const res = await fetch("/api/auth/me");
+        const res = await fetch('/api/auth/me');
         const data = await res.json();
 
-        if (data.authenticated) {
-          setIsAuth(true);
+        if (res.ok && data.authenticated) {
+          setUser(data.user);
         } else {
-          router.push("/signin");
+          router.push('/');
         }
       } catch (error) {
-        console.error("Auth check failed", error);
-        router.push("/signin");
+        router.push('/');
+      } finally {
+        setLoading(false);
       }
-    }
-    checkAuth();
+    };
+
+    fetchUser();
   }, [router]);
 
-  if (isAuth === null) return <p>Checking authentication...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-gray-500">Checking authentication...</p>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <h1>Welcome to your Dashboard</h1>
-      <div className="mt-4">
-        <label htmlFor="csvFileSelector">
-          <Button asChild>
-            <span>
-              <Upload /> Upload CSV file
-            </span>
-          </Button>
-        </label>
-        <input
-          type="file"
-          accept={acceptableFileInputcsv}
-          onChange={onFileChangeHandler}
-          id="csvFileSelector"
-          className="hidden"
-        />
-      </div>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-purple-100 to-blue-100">
+      <div className="bg-white shadow-xl rounded-3xl p-10 w-full max-w-md space-y-6 text-center">
+        <h1 className="text-3xl font-bold text-purple-700">Welcome {user?.email}!</h1>
+        <p className="text-gray-700">You're logged in as a <strong>{user?.role}</strong>.</p>
 
-      {csvData.length > 0 && (
-        <div className="mt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {Object.keys(csvData[0]).map((key) => (
-                  <TableHead key={key}>{key}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {csvData.map((row, index) => (
-                <TableRow key={index}>
-                  {Object.values(row).map((value, idx) => (
-                    <TableCell key={idx}>{value}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </>
+        {/* Add more personalized dashboard content here */}
+      </div>
+    </main>
   );
 }
