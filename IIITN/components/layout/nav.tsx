@@ -25,7 +25,7 @@ export function Nav() {
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+      <div className="container flex h-12 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
             <span className="hidden font-bold sm:inline-block">
@@ -99,7 +99,8 @@ export function Nav() {
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="outline" className="relative h-8 w-8 rounded-full p-0 ring-offset-background transition-all hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-muted data-[state=open]:text-primary">
+                  
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     {session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}
                   </div>
