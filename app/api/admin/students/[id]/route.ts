@@ -6,8 +6,11 @@ import { connectToDatabase } from '@/lib/db/mongodb';
 // GET request handler to fetch a single student by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  // First await the params object
+  const { id } = await context.params;
+  
   try {
     const session = await getServerAuthSession();
     
@@ -21,7 +24,8 @@ export async function GET(
     
     await connectToDatabase();
     
-    const student = await Student.findById(params.id);
+    // Use the awaited id
+    const student = await Student.findById(id);
     
     if (!student) {
       return NextResponse.json(
@@ -47,8 +51,11 @@ export async function GET(
 // PUT request handler to update a student
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  // First await the params object
+  const { id } = await context.params;
+  
   try {
     const session = await getServerAuthSession();
     
@@ -64,7 +71,8 @@ export async function PUT(
     
     await connectToDatabase();
     
-    const student = await Student.findById(params.id);
+    // Use the awaited id
+    const student = await Student.findById(id);
     
     if (!student) {
       return NextResponse.json(
@@ -73,8 +81,7 @@ export async function PUT(
       );
     }
     
-    // Update student with new data
-    // We'll only update fields that are provided
+    // Rest of your update logic...
     const fieldsToUpdate = [
       'name', 'email', 'branch', 'phoneNumber', 'cgpa', 'activeBacklogs',
       'gender', 'hometown', 'dob', 'accountStatus'

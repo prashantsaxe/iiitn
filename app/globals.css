@@ -77,55 +77,56 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
+/* Update the dark mode variables to be less gray and more modern */
 .dark {
-  /* Apple-style dark mode - refined neutral grays with minimal saturation */
-  --background: oklch(0.17 0.005 240); /* True neutral dark gray, Apple's standard */
-  --foreground: oklch(0.98 0.003 240); /* Clean white text */
+  /* Apple's Dark Mode - iOS 17/macOS Sonoma style */
+  --background: oklch(0.15 0.015 260); /* Slightly blue-tinted dark background */
+  --foreground: oklch(0.98 0.005 260); /* Clean white text with tiny blue tint */
   
-  --card: oklch(0.22 0.005 240); /* Slightly elevated card background */
-  --card-foreground: oklch(0.98 0.003 240);
+  --card: oklch(0.2 0.015 260); /* Slightly elevated card background */
+  --card-foreground: oklch(0.98 0.005 260);
   
-  --popover: oklch(0.20 0.005 240 / 90%); /* Semi-transparent popover with subtle blur */
-  --popover-foreground: oklch(0.98 0.003 240);
+  --popover: oklch(0.2 0.015 260 / 90%); /* Semi-transparent popover with blur */
+  --popover-foreground: oklch(0.98 0.005 260);
   
-  /* Apple's SF Blue - More authentic to macOS/iOS */
-  --primary: oklch(0.55 0.16 250); /* Apple's true SF Blue */
+  /* Apple's iOS/macOS blue */
+  --primary: oklch(0.58 0.18 250); /* Vibrant Apple blue */
   --primary-foreground: oklch(1 0 0);
   
-  --secondary: oklch(0.28 0.005 240); /* Slightly lighter gray for secondary UI */
-  --secondary-foreground: oklch(0.98 0.003 240);
+  --secondary: oklch(0.26 0.015 260); /* Slightly lighter gray for secondary UI */
+  --secondary-foreground: oklch(0.98 0.005 260);
   
-  --muted: oklch(0.28 0.005 240);
-  --muted-foreground: oklch(0.65 0.005 240); /* Apple's subtle gray text */
+  --muted: oklch(0.26 0.015 260);
+  --muted-foreground: oklch(0.7 0.01 260); /* Apple's subtle gray text */
   
-  --accent: oklch(0.28 0.005 240);
-  --accent-foreground: oklch(0.98 0.003 240);
+  --accent: oklch(0.26 0.015 260);
+  --accent-foreground: oklch(0.98 0.005 260);
   
-  /* Apple's system red - More authentic */
-  --destructive: oklch(0.62 0.22 25);
+  /* Apple's system red */
+  --destructive: oklch(0.65 0.25 25);
   --destructive-foreground: oklch(1 0 0);
   
   /* More refined subtle borders */
-  --border: oklch(0.30 0.005 240 / 15%);
-  --input: oklch(0.30 0.005 240 / 12%);
-  --ring: oklch(0.55 0.16 250 / 40%);
+  --border: oklch(0.28 0.01 260 / 20%);
+  --input: oklch(0.28 0.01 260 / 15%);
+  --ring: oklch(0.58 0.18 250 / 40%);
   
   /* Apple's system palette for charts and data visualization */
-  --chart-1: oklch(0.55 0.16 250); /* SF Blue */
-  --chart-2: oklch(0.58 0.17 140); /* SF Green */
-  --chart-3: oklch(0.62 0.22 25);  /* SF Red */
-  --chart-4: oklch(0.60 0.18 45);  /* SF Orange */
-  --chart-5: oklch(0.58 0.18 305); /* SF Purple */
+  --chart-1: oklch(0.58 0.18 250); /* Blue */
+  --chart-2: oklch(0.6 0.18 140); /* Green */
+  --chart-3: oklch(0.65 0.25 25);  /* Red */
+  --chart-4: oklch(0.63 0.20 45);  /* Orange */
+  --chart-5: oklch(0.6 0.20 305); /* Purple */
   
   /* Sidebar styling - matching macOS sidebar */
-  --sidebar: oklch(0.19 0.005 240);
-  --sidebar-foreground: oklch(0.98 0.003 240);
-  --sidebar-primary: oklch(0.55 0.16 250);
+  --sidebar: oklch(0.17 0.015 260);
+  --sidebar-foreground: oklch(0.98 0.005 260);
+  --sidebar-primary: oklch(0.58 0.18 250);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.28 0.005 240);
-  --sidebar-accent-foreground: oklch(0.98 0.003 240);
-  --sidebar-border: oklch(0.30 0.005 240 / 12%);
-  --sidebar-ring: oklch(0.55 0.16 250 / 40%);
+  --sidebar-accent: oklch(0.26 0.015 260);
+  --sidebar-accent-foreground: oklch(0.98 0.005 260);
+  --sidebar-border: oklch(0.28 0.01 260 / 20%);
+  --sidebar-ring: oklch(0.58 0.18 250 / 40%);
 }
 
 @layer base {
@@ -199,4 +200,62 @@ input[type=number] {
 .apple-heading {
   letter-spacing: -0.025em;
   font-weight: 600;
+}
+/* Add this at the end of your file */
+
+/* Hide scrollbars for all elements while maintaining functionality */
+/* For Webkit browsers (Chrome, Safari, newer Edge) */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* For Internet Explorer and Edge Legacy */
+* {
+  -ms-overflow-style: none;
+}
+
+/* Specific class for elements where you want to keep Apple-style thin scrollbars */
+.apple-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.apple-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.dark .apple-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.dark .apple-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* For Firefox */
+.apple-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.dark .apple-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }

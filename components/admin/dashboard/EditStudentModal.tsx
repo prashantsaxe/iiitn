@@ -142,31 +142,35 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto bg-white dark:bg-gray-900 rounded-xl border border-gray-200/50 dark:border-gray-800/50 backdrop-blur-lg shadow-lg">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold tracking-tight flex items-center gap-3">
-            {!loading && student && (
-              <Avatar className="h-10 w-10 border border-gray-200 dark:border-gray-800">
-                <AvatarImage src={student.photo} />
-                <AvatarFallback>{getInitials(student.name || "")}</AvatarFallback>
-              </Avatar>
-            )}
-            Edit Student
-          </DialogTitle>
-          <DialogDescription>
-            Update student information in the system
-          </DialogDescription>
-        </DialogHeader>
+<DialogContent className="max-w-4xl max-h-[90vh] overflow-auto bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#1c1c1e] dark:via-[#2c2c2e] dark:to-[#3a3a3c] rounded-3xl border border-gray-200/70 dark:border-gray-700/50 shadow-2xl">
+  <DialogHeader className="pb-4">
+    <DialogTitle className="text-2xl font-semibold tracking-tight flex items-center gap-4 text-gray-900 dark:text-white">
+      {!loading && student && (
+        <Avatar className="h-12 w-12 border border-gray-200/70 dark:border-gray-700/50 overflow-hidden">
+          <AvatarImage src={student.photo} />
+          <AvatarFallback className="bg-primary/10 text-primary dark:bg-primary/20">
+            {getInitials(student.name || "")}
+          </AvatarFallback>
+        </Avatar>
+      )}
+      Edit Student
+    </DialogTitle>
+    <DialogDescription className="text-gray-600 dark:text-gray-400">
+      Update student information in the system
+    </DialogDescription>
+  </DialogHeader>
 
         {loading ? (
-          <div className="py-8 flex justify-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-          </div>
+          <div className="py-12 flex justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 dark:border-gray-700 border-t-primary dark:border-t-primary"></div>
+        </div>
         ) : student ? (
           <div className="space-y-6">
             {/* Personal Information */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Personal Information</h3>
+            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
+  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
+  Personal Information
+</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
@@ -175,7 +179,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     name="name" 
                     value={student.name || ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -185,7 +190,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     name="email" 
                     value={student.email || ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -195,7 +201,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     name="phoneNumber" 
                     value={student.phoneNumber || ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -204,10 +211,12 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     value={student.gender || ""}
                     onValueChange={(value) => handleSelectChange("gender", value)}
                   >
-                    <SelectTrigger className="rounded-lg">
+                    <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-lg">
+                    <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
@@ -221,7 +230,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     name="hometown" 
                     value={student.hometown || ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -232,7 +242,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     type="date"
                     value={student.dob ? new Date(student.dob).toISOString().split('T')[0] : ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
               </div>
@@ -241,8 +252,9 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
             <Separator />
 
             {/* Academic Information */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Academic Information</h3>
+            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
+  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
+            Academic Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="branch">Branch</Label>
@@ -250,10 +262,12 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     value={student.branch || ""}
                     onValueChange={(value) => handleSelectChange("branch", value)}
                   >
-                    <SelectTrigger className="rounded-lg">
+                    <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                       <SelectValue placeholder="Select branch" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-lg">
+                    <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                       <SelectItem value="CSE">Computer Science</SelectItem>
                       <SelectItem value="ECE">Electronics</SelectItem>
                       <SelectItem value="Mech">Mechanical</SelectItem>
@@ -273,7 +287,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     step="0.01"
                     value={student.cgpa || ""} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -285,7 +300,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     min="0"
                     value={student.activeBacklogs || 0} 
                     onChange={handleInputChange}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -298,7 +314,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     step="0.01"
                     value={student.education?.tenthMarks || ""} 
                     onChange={(e) => handleNestedInputChange("education", "tenthMarks", parseFloat(e.target.value))}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -311,7 +328,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     step="0.01"
                     value={student.education?.twelfthMarks || ""} 
                     onChange={(e) => handleNestedInputChange("education", "twelfthMarks", parseFloat(e.target.value))}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
               </div>
@@ -320,8 +338,9 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
             <Separator />
 
             {/* Placement Information */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Placement Information</h3>
+            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
+            <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
+            Placement Information</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <Switch 
@@ -340,7 +359,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                         id="company" 
                         value={student.placement?.company || ""} 
                         onChange={(e) => handleNestedInputChange("placement", "company", e.target.value)}
-                        className="rounded-lg"
+                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                       />
                     </div>
                     <div className="space-y-2">
@@ -351,7 +371,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                         min="0"
                         value={student.placement?.package || ""} 
                         onChange={(e) => handleNestedInputChange("placement", "package", parseFloat(e.target.value))}
-                        className="rounded-lg"
+                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                       />
                     </div>
                     <div className="space-y-2">
@@ -360,10 +381,12 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                         value={student.placement?.type || ""}
                         onValueChange={(value) => handleNestedInputChange("placement", "type", value)}
                       >
-                        <SelectTrigger className="rounded-lg">
+                        <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-lg">
+                        <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                           <SelectItem value="intern">Internship</SelectItem>
                           <SelectItem value="fte">Full-Time</SelectItem>
                           <SelectItem value="both">Both</SelectItem>
@@ -377,7 +400,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                         type="date"
                         value={student.placement?.offerDate ? new Date(student.placement.offerDate).toISOString().split('T')[0] : ""} 
                         onChange={(e) => handleNestedInputChange("placement", "offerDate", e.target.value)}
-                        className="rounded-lg"
+                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                       />
                     </div>
                   </div>
@@ -388,17 +412,20 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
             <Separator />
 
             {/* Account Status */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Account Status</h3>
+            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
+  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
+            Account Status</h3>
               <div className="space-y-2">
                 <Select 
                   value={student.accountStatus || "active"}
                   onValueChange={(value) => handleSelectChange("accountStatus", value)}
                 >
-                  <SelectTrigger className="rounded-lg">
+                  <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-lg">
+                  <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
                     <SelectItem value="blocked">Blocked</SelectItem>
@@ -408,8 +435,9 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
             </div>
 
             {/* Social Media Links */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Social Media</h3>
+            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
+  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
+            Social Media</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="linkedin">LinkedIn</Label>
@@ -417,7 +445,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     id="linkedin" 
                     value={student.socialMedia?.linkedin || ""} 
                     onChange={(e) => handleNestedInputChange("socialMedia", "linkedin", e.target.value)}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -426,7 +455,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     id="github" 
                     value={student.socialMedia?.github || ""} 
                     onChange={(e) => handleNestedInputChange("socialMedia", "github", e.target.value)}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -435,7 +465,8 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                     id="portfolio" 
                     value={student.socialMedia?.portfolio || ""} 
                     onChange={(e) => handleNestedInputChange("socialMedia", "portfolio", e.target.value)}
-                    className="rounded-lg"
+                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
+
                   />
                 </div>
               </div>
@@ -443,23 +474,23 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
           </div>
         ) : null}
 
-        <DialogFooter className="mt-6">
-          <Button 
-            variant="outline" 
-            onClick={onClose}
-            className="rounded-full border border-gray-200 dark:border-gray-700"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={loading}
-            className="rounded-full bg-primary text-white"
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+<DialogFooter className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800/30">
+  <Button
+    variant="outline"
+    onClick={onClose}
+    className="rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60"
+  >
+    Cancel
+  </Button>
+  <Button
+    onClick={handleSubmit}
+    disabled={loading}
+    className="rounded-full bg-primary hover:bg-primary/90 text-white shadow-md"
+  >
+    {loading ? "Saving..." : "Save Changes"}
+  </Button>
+</DialogFooter>
+</DialogContent>
     </Dialog>
   );
 }
