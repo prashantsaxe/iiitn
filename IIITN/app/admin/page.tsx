@@ -326,12 +326,21 @@ export default function AdminDashboard() {
     
     // Apply salary percentage filter
     if (salaryPercentFilter !== null) {
-      filtered = filtered.filter(s => 
-        !s.placement.placed || 
-        (s.placement.placed && 
-         s.placement.package && 
-         s.placement.package >= salaryPercentFilter * 100000)
-      );
+      filtered = filtered.filter(student => {
+        // Include unplaced students
+        if (!student.placement.placed || !student.placement.package) {
+          return true;
+        }
+        
+        // For placed students, check if their salary is less than or equal to input/1.5
+        // This means the input amount is ≥ 150% of their salary
+        const targetSalary = salaryPercentFilter;
+        const studentSalary = student.placement.package;
+        
+        // The input amount should be >= 150% of the student's salary
+        // So studentSalary <= targetSalary / 1.5
+        return studentSalary <= (targetSalary / 1.5);
+      });
     }
     
     // Apply sorting
@@ -396,11 +405,11 @@ export default function AdminDashboard() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-10">
-      <Navbar user={session?.user} />
+      {/* <Navbar user={session?.user} /> */}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <StatsCards stats={stats} />
+        {/* <StatsCards stats={stats} /> */}
         
         {/* Applied Filter Tags */}
         <FilterTags 

@@ -307,65 +307,69 @@ export function FilterControls({
 </Select>
 
           {/* Special Percentage Salary Filter - Apple style */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={`h-9 px-4 rounded-xl border-0 ring-1 ring-gray-200 hover:ring-gray-300 
-                  ${salaryPercentFilter ? 'bg-gray-100/70 text-gray-900 font-medium' : 'bg-white text-gray-700 hover:text-gray-700'}
-                  shadow-sm transition-all duration-200`}
-              >
-                <BarChart4 className="h-4 w-4 mr-2 text-gray-500" />
-                {salaryPercentFilter ? `Salary %: ${salaryPercentFilter}%` : 'Salary % Filter'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 rounded-xl border-0 overflow-hidden shadow-lg bg-white/95 backdrop-blur-md">
-              <div className="p-4 space-y-4">
-                <h4 className="font-medium text-gray-900">Salary Percentage Filter</h4>
-                <p className="text-sm text-gray-600">
-                  Show unplaced students OR placed students with salary ≥ the specified percentage.
-                </p>
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
-                      <span>0%</span>
-                      <span className="font-medium text-gray-900">{salaryPercentValue}%</span>
-                      <span>100%</span>
-                    </div>
-                    <Slider
-                      value={[salaryPercentValue]}
-                      min={0}
-                      max={100}
-                      step={5}
-                      onValueChange={(value: number[]) => setSalaryPercentValue(value[0])}
-                      className="py-4"
-                    />
-                  </div>
-                  <div className="flex justify-between pt-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSalaryPercentFilter(null);
-                        setSalaryPercentValue(0);
-                      }}
-                      className="rounded-xl border-0 ring-1 ring-gray-200 hover:bg-gray-50 text-gray-700"
-                    >
-                      Clear
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setSalaryPercentFilter(salaryPercentValue);
-                        document.body.click();
-                      }}
-                      className="rounded-xl bg-gray-900 text-white hover:bg-gray-800"
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          {/* Special Percentage Salary Filter - Apple style */}
+<Popover>
+  <PopoverTrigger asChild>
+    <Button
+      variant="outline"
+      className={`h-9 px-4 rounded-xl border-0 ring-1 ring-gray-200 hover:ring-gray-300 
+        ${salaryPercentFilter ? 'bg-gray-100/70 text-gray-900 font-medium' : 'bg-white text-gray-700 hover:text-gray-700'}
+        shadow-sm transition-all duration-200`}
+    >
+      <BarChart4 className="h-4 w-4 mr-2 text-gray-500" />
+      {salaryPercentFilter ? `Salary 150%: ≥ ₹${salaryPercentFilter}` : 'Salary 150% Filter'}
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-80 p-0 rounded-xl border-0 overflow-hidden shadow-lg bg-white/95 backdrop-blur-md">
+    <div className="p-4 space-y-4">
+      <h4 className="font-medium text-gray-900">Salary 150% Filter</h4>
+      <p className="text-sm text-gray-600">
+        Show unplaced students OR students where the input amount is ≥ 150% of their salary.
+      </p>
+      
+      {/* Salary Percent Input Field */}
+      <div className="space-y-3">
+        <div className="pt-2">
+          <label className="text-sm text-gray-700 font-medium mb-1 block">Enter target salary amount (₹)</label>
+          <Input
+            type="number"
+            min={0}
+            value={salaryPercentValue}
+            onChange={(e) => setSalaryPercentValue(parseInt(e.target.value) || 0)}
+            placeholder="Enter amount in rupees"
+            className="h-9 rounded-xl bg-white border-0 shadow-sm ring-1 ring-gray-200 focus:!ring-1 focus:ring-gray-300 text-gray-700"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Example: If you enter ₹150,000, it will show students with salary ≤ ₹100,000 or unplaced
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex justify-between pt-2">
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSalaryPercentFilter(null);
+            setSalaryPercentValue(0);
+            document.body.click();
+          }}
+          className="rounded-xl border-0 ring-1 ring-gray-200 hover:bg-gray-50 text-gray-700"
+        >
+          Clear
+        </Button>
+        <Button
+          onClick={() => {
+            setSalaryPercentFilter(salaryPercentValue);
+            document.body.click();
+          }}
+          className="rounded-xl bg-gray-900 text-white hover:bg-gray-800"
+        >
+          Apply
+        </Button>
+      </div>
+    </div>
+  </PopoverContent>
+</Popover>
 
           {/* Sorting Options - Apple style dropdown */}
           <DropdownMenu>
