@@ -77,39 +77,55 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
-
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Apple-style dark mode - refined neutral grays with minimal saturation */
+  --background: oklch(0.17 0.005 240); /* True neutral dark gray, Apple's standard */
+  --foreground: oklch(0.98 0.003 240); /* Clean white text */
+  
+  --card: oklch(0.22 0.005 240); /* Slightly elevated card background */
+  --card-foreground: oklch(0.98 0.003 240);
+  
+  --popover: oklch(0.20 0.005 240 / 90%); /* Semi-transparent popover with subtle blur */
+  --popover-foreground: oklch(0.98 0.003 240);
+  
+  /* Apple's SF Blue - More authentic to macOS/iOS */
+  --primary: oklch(0.55 0.16 250); /* Apple's true SF Blue */
+  --primary-foreground: oklch(1 0 0);
+  
+  --secondary: oklch(0.28 0.005 240); /* Slightly lighter gray for secondary UI */
+  --secondary-foreground: oklch(0.98 0.003 240);
+  
+  --muted: oklch(0.28 0.005 240);
+  --muted-foreground: oklch(0.65 0.005 240); /* Apple's subtle gray text */
+  
+  --accent: oklch(0.28 0.005 240);
+  --accent-foreground: oklch(0.98 0.003 240);
+  
+  /* Apple's system red - More authentic */
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(1 0 0);
+  
+  /* More refined subtle borders */
+  --border: oklch(0.30 0.005 240 / 15%);
+  --input: oklch(0.30 0.005 240 / 12%);
+  --ring: oklch(0.55 0.16 250 / 40%);
+  
+  /* Apple's system palette for charts and data visualization */
+  --chart-1: oklch(0.55 0.16 250); /* SF Blue */
+  --chart-2: oklch(0.58 0.17 140); /* SF Green */
+  --chart-3: oklch(0.62 0.22 25);  /* SF Red */
+  --chart-4: oklch(0.60 0.18 45);  /* SF Orange */
+  --chart-5: oklch(0.58 0.18 305); /* SF Purple */
+  
+  /* Sidebar styling - matching macOS sidebar */
+  --sidebar: oklch(0.19 0.005 240);
+  --sidebar-foreground: oklch(0.98 0.003 240);
+  --sidebar-primary: oklch(0.55 0.16 250);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.28 0.005 240);
+  --sidebar-accent-foreground: oklch(0.98 0.003 240);
+  --sidebar-border: oklch(0.30 0.005 240 / 12%);
+  --sidebar-ring: oklch(0.55 0.16 250 / 40%);
 }
 
 @layer base {
