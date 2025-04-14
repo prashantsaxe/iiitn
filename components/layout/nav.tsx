@@ -18,96 +18,105 @@ export function Nav() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
-  
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
+
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
-      <div className="container flex h-12 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex gap-6 md:gap-10">
+    <header className="backdrop-blur-xl bg-white/80 dark:bg-black/80 sticky top-0 z-40 w-full border-b border-gray-200/50 dark:border-gray-800/50">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">
+            <span className="hidden text-lg font-medium tracking-tight sm:inline-block">
               Campus System
             </span>
           </Link>
-          <nav className="flex gap-6">
-            <Link
-              href="/"
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                isActive("/") ? "text-foreground" : "text-foreground/60"
-              )}
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                isActive("/about") ? "text-foreground" : "text-foreground/60"
-              )}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                isActive("/contact") ? "text-foreground" : "text-foreground/60"
-              )}
-            >
-              Contact
-            </Link>
-            {isLoggedIn && (
-              <Link
-                href="/dashboard"
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive("/dashboard") ? "text-foreground" : "text-foreground/60"
-                )}
-              >
-                Dashboard
-              </Link>
-            )}
-            {isLoggedIn && session?.user?.role === "admin" && (
-              <Link
-                href="/admin"
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname.startsWith("/admin") ? "text-foreground" : "text-foreground/60"
-                )}
-              >
-                Admin
-              </Link>
-            )}
-            {isLoggedIn && session?.user?.role === "student" && (
-              <Link
-                href="/student"
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname.startsWith("/student") ? "text-foreground" : "text-foreground/60"
-                )}
-              >
-                My Profile
-              </Link>
-            )}
-          </nav>
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+
+        {/* Navigation Links */}
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link
+            href="/"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              isActive("/") ? "text-primary font-semibold" : "text-foreground/70"
+            )}
+          >
+            Home
+          </Link>
+          <Link
+            href="/about"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              isActive("/about") ? "text-primary font-semibold" : "text-foreground/70"
+            )}
+          >
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              isActive("/contact") ? "text-primary font-semibold" : "text-foreground/70"
+            )}
+          >
+            Contact
+          </Link>
+          {isLoggedIn && (
+            <Link
+              href="/dashboard"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                isActive("/dashboard") ? "text-primary font-semibold" : "text-foreground/70"
+              )}
+            >
+              Dashboard
+            </Link>
+          )}
+          {isLoggedIn && session?.user?.role === "admin" && (
+            <Link
+              href="/admin"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                pathname.startsWith("/admin") ? "text-primary font-semibold" : "text-foreground/70"
+              )}
+            >
+              Admin
+            </Link>
+          )}
+          {isLoggedIn && session?.user?.role === "student" && (
+            <Link
+              href="/student"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                pathname.startsWith("/student") ? "text-primary font-semibold" : "text-foreground/70"
+              )}
+            >
+              My Profile
+            </Link>
+          )}
+        </nav>
+
+        {/* User Actions */}
+        <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="relative h-8 w-8 rounded-full p-0 ring-offset-background transition-all hover:ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-muted data-[state=open]:text-primary">
-                  
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Button
+                  variant="ghost"
+                  className="relative h-9 w-9 rounded-full p-0 overflow-hidden transition-all hover:ring-2 hover:ring-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     {session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
+              <DropdownMenuContent
+                className="w-56 mt-1 bg-white/90 dark:bg-black/90 backdrop-blur-lg border border-gray-200/60 dark:border-gray-800/60 rounded-lg shadow-lg"
+                align="end"
+                forceMount
+              >
+                <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
                       {session?.user?.name || "User"}
@@ -117,26 +126,38 @@ export function Nav() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    signOut({ callbackUrl: "/" });
-                  }}
-                >
-                  Log out
-                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200/60 dark:bg-gray-800/60" />
+                <div className="p-1">
+                  <DropdownMenuItem asChild className="rounded-md cursor-pointer focus:bg-gray-100/80 dark:focus:bg-gray-900/60">
+                    <Link href="/dashboard" className="px-3 py-2">
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-md cursor-pointer focus:bg-gray-100/80 dark:focus:bg-gray-900/60">
+                    <Link href="/settings" className="px-3 py-2">
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+                <DropdownMenuSeparator className="bg-gray-200/60 dark:bg-gray-800/60" />
+                <div className="p-1">
+                  <DropdownMenuItem
+                    className="rounded-md cursor-pointer px-3 py-2 focus:bg-gray-100/80 dark:focus:bg-gray-900/60 text-red-600 dark:text-red-500"
+                    onSelect={() => {
+                      signOut({ callbackUrl: "/" });
+                    }}
+                  >
+                    Log out
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild size="sm">
+            <Button
+              asChild
+              size="sm"
+              className="rounded-full px-5 bg-primary hover:bg-primary/90 transition-all shadow-sm"
+            >
               <Link href="/login">Login</Link>
             </Button>
           )}
