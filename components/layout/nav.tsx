@@ -13,10 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 
 export function Nav() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const { theme, setTheme } = useTheme();
   const isLoggedIn = status === "authenticated";
 
   const isActive = (path: string) => pathname === path;
@@ -99,6 +102,18 @@ export function Nav() {
 
         {/* User Actions */}
         <div className="flex items-center space-x-4">
+          {/* Apple-style Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="h-9 w-9 rounded-full bg-secondary/50 backdrop-blur-sm hover:bg-secondary/70 transition-colors"
+            aria-label="Toggle theme"
+          >
+            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
+
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
