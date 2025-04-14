@@ -450,6 +450,7 @@ export default function AdminDashboard() {
               totalCount={students.length}
               loading={loading}
               error={error}
+              onStudentUpdated={fetchStudents}
             />
           </TabsContent>
           <TabsContent value="placed" className="mt-6">
@@ -458,6 +459,7 @@ export default function AdminDashboard() {
               totalCount={students.length}
               loading={loading}
               error={error}
+              onStudentUpdated={fetchStudents}
             />
           </TabsContent>
           <TabsContent value="unplaced" className="mt-6">
@@ -466,6 +468,7 @@ export default function AdminDashboard() {
               totalCount={students.length}
               loading={loading}
               error={error}
+              onStudentUpdated={fetchStudents}
             />
           </TabsContent>
           <TabsContent value="active" className="mt-6">
@@ -474,6 +477,7 @@ export default function AdminDashboard() {
               totalCount={students.length}
               loading={loading}
               error={error}
+              onStudentUpdated={fetchStudents}
             />
           </TabsContent>
           <TabsContent value="inactive" className="mt-6">
@@ -482,6 +486,7 @@ export default function AdminDashboard() {
               totalCount={students.length}
               loading={loading}
               error={error}
+              onStudentUpdated={fetchStudents}
             />
           </TabsContent>
         </FilterControls>
