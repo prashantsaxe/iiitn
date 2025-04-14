@@ -1,45 +1,182 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/mongodb';
+import { NextRequest, NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/db/mongodb';
+import { Student } from '@/lib/db/models/student';
+import { Admin } from '@/lib/db/models/admin';
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic'; // Don't cache this route
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const metric = searchParams.get('metric');
+  
   try {
-    const url = new URL(request.url);
-    const year = url.searchParams.get('year'); // Get the year from query params
-
-    const query = year ? { 'placement.year': parseInt(year), 'placement.placed': true } : { 'placement.placed': true };
-
-    console.log('Query:', query); // Debugging query
-
-    const placedUsers = await db.collection('users').find(query).toArray();
-
-    console.log('Placed Users:', placedUsers); // Debugging data
-
-    const totalPlaced = placedUsers.length;
-    const placementTypes = { intern: 0, fte: 0, both: 0 };
-    const companiesSet = new Set<string>();
-
-    placedUsers.forEach((user) => {
-      const placement = (user as any).placement;
-      if (placement?.type) {
-        placementTypes[placement.type as keyof typeof placementTypes]++;
+    await connectToDatabase();
+    
+    switch (metric) {
+      case 'studentCount': {
+        const count = await Student.countDocuments();
+        // You could calculate trend by comparing to previous periods
+        // For demo purposes, we'll use a static trend
+        return NextResponse.json({ 
+          count,
+          trend: { value: 5.2, label: 'from last month' }
+        });
       }
-      if (placement?.company) {
-        companiesSet.add(placement.company);
+      
+      case 'placedCount': {
+        const count = await Student.countDocuments({ 'placement.placed': true });
+        return NextResponse.json({ 
+          count,
+          trend: { value: 12.5, label: 'from last month' }
+        });
       }
-    });
-
-    return NextResponse.json({
-      totalPlaced,
-      totalCompanies: companiesSet.size,
-      placementTypes,
-    });
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('API Error:', err.message); // Safely access the error message
-      return NextResponse.json({ message: 'Server Error', error: err.message }, { status: 500 });
-    } else {
-      console.error('Unknown Error:', err); // Handle unknown errors
-      return NextResponse.json({ message: 'Server Error', error: 'An unknown error occurred' }, { status: 500 });
+      
+      case 'placementRate': {
+        const totalCount = await Student.countDocuments();
+        const placedCount = await Student.countDocuments({ 'placement.placed': true });
+        const rate = totalCount > 0 ? parseFloat(((placedCount / totalCount) * 100).toFixed(1)) : 0;
+        
+        return NextResponse.json({ 
+          rate,
+          trend: { value: 3.8, label: 'from last year' }
+        });
+      }
+      
+      case 'adminCount': {
+        const count = await Admin.countDocuments({ accountStatus: 'active' });
+        return NextResponse.json({ count });
+      }
+      
+      case 'branchDistribution': {
+        const totalStudents = await Student.countDocuments();
+        const branchData = await Student.aggregate([
+          { $group: { _id: '$branch', count: { $sum: 1 } } },
+          { $sort: { count: -1 } }
+        ]);
+        
+        const branches = branchData.map(item => ({
+          name: item._id,
+          count: item.count,
+          percentage: Math.round((item.count / totalStudents) * 100)
+        }));
+        
+        return NextResponse.json({ branches });
+      }
+      
+      case 'placementCompanies': {
+        const companyData = await Student.aggregate([
+          { $match: { 'placement.placed': true, 'placement.company': { $exists: true, $ne: '' } } },
+          { $group: { 
+              _id: '$placement.company', 
+              count: { $sum: 1 },
+              avgPackage: { $avg: '$placement.package' }
+            } 
+          },
+          { $sort: { count: -1 } },
+          { $limit: 5 }
+        ]);
+        
+        const companies = companyData.map(item => ({
+          name: item._id,
+          count: item.count,
+          avgPackage: item.avgPackage
+        }));
+        
+        return NextResponse.json({ companies });
+      }
+      
+      case 'recentStudents': {
+        const students = await Student.find({})
+          .select('name email branch cgpa placement')
+          .sort({ createdAt: -1 })
+          .limit(5)
+          .lean();
+          
+        return NextResponse.json({ 
+          students: JSON.parse(JSON.stringify(students)) 
+        });
+      }
+      
+      case 'all': {
+        // Fetch all dashboard metrics at once for a single API call
+        const [
+          totalStudents,
+          placedStudents,
+          activeAdmins,
+          branchData,
+          companyData,
+          recentStudents
+        ] = await Promise.all([
+          Student.countDocuments(),
+          Student.countDocuments({ 'placement.placed': true }),
+          Admin.countDocuments({ accountStatus: 'active' }),
+          Student.aggregate([
+            { $group: { _id: '$branch', count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+          ]),
+          Student.aggregate([
+            { $match: { 'placement.placed': true, 'placement.company': { $exists: true, $ne: '' } } },
+            { $group: { 
+                _id: '$placement.company', 
+                count: { $sum: 1 },
+                avgPackage: { $avg: '$placement.package' }
+              } 
+            },
+            { $sort: { count: -1 } },
+            { $limit: 5 }
+          ]),
+          Student.find({})
+            .select('name email branch cgpa placement')
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .lean()
+        ]);
+        
+        const placementRate = totalStudents > 0 
+          ? parseFloat(((placedStudents / totalStudents) * 100).toFixed(1)) 
+          : 0;
+          
+        const branches = branchData.map(item => ({
+          name: item._id,
+          count: item.count,
+          percentage: Math.round((item.count / totalStudents) * 100)
+        }));
+        
+        const companies = companyData.map(item => ({
+          name: item._id,
+          count: item.count,
+          avgPackage: item.avgPackage
+        }));
+        
+        return NextResponse.json({
+          studentCount: {
+            count: totalStudents,
+            trend: { value: 5.2, label: 'from last month' }
+          },
+          placedCount: {
+            count: placedStudents,
+            trend: { value: 12.5, label: 'from last month' }
+          },
+          placementRate: {
+            rate: placementRate,
+            trend: { value: 3.8, label: 'from last year' }
+          },
+          adminCount: {
+            count: activeAdmins
+          },
+          branches,
+          companies,
+          students: JSON.parse(JSON.stringify(recentStudents))
+        });
+      }
+      
+      default:
+        return NextResponse.json({ error: 'Invalid metric specified' }, { status: 400 });
     }
+    
+  } catch (error) {
+    console.error('Dashboard API Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

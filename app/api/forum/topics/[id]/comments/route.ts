@@ -1,31 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Comment } from "@/lib/models/student/forum";
+import { Comment, Topic } from "@/lib/db/models/forum";
 import mongoose from "mongoose";
+import { use } from "react";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest, 
+  context: { params: { id: string } }
+) {
   try {
+    // Unwrap the params object using React.use()
+    const { id: topicId } = await context.params;
+    
     const searchParams = req.nextUrl.searchParams;
-    const limit = parseInt(searchParams.get("limit") || "10"); // Number of comments to fetch
-    const lastCreatedAt = searchParams.get("lastCreatedAt"); // Timestamp of the last loaded comment
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const lastCreatedAt = searchParams.get("lastCreatedAt");
 
     if (!mongoose.connections[0].readyState) {
       await mongoose.connect(process.env.MONGODB_URI!);
     }
 
-    // Build the query for lazy loading
-    const query: any = { topicId: params.id, isActive: true };
+    const query: any = { topicId, isActive: true };
     if (lastCreatedAt) {
-      query.createdAt = { $lt: new Date(lastCreatedAt) }; // Fetch comments created before the last timestamp
+      query.createdAt = { $lt: new Date(lastCreatedAt) };
     }
 
-    // Fetch comments
     const comments = await Comment.find(query)
-      .sort({ createdAt: -1 }) // Sort by newest first
+      .sort({ createdAt: -1 })
       .limit(limit);
 
     return NextResponse.json({
       comments,
-      hasMore: comments.length === limit, // Indicate if there are more comments to load
+      hasMore: comments.length === limit,
     });
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -33,8 +38,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  req: NextRequest, 
+  context: { params: { id: string } }
+) {
   try {
+    // Unwrap the params object using React.use()
+    const { id: topicId } = await context.params;
+    
     const data = await req.json();
 
     if (!data.content) {
@@ -45,8 +56,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       await mongoose.connect(process.env.MONGODB_URI!);
     }
 
-    const comment = new Comment({ ...data, topicId: params.id });
+    const comment = new Comment({ ...data, topicId });
     await comment.save();
+
+    await Topic.findByIdAndUpdate(
+      topicId,
+      { $inc: { commentsCount: 1 } }
+    );
 
     return NextResponse.json({ message: "Comment added successfully", comment }, { status: 201 });
   } catch (error) {

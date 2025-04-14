@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Topic } from "@/lib/models/student/forum";
+import { Topic } from "@/lib/db/models/forum";
 import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
@@ -38,22 +38,76 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
-
-    if (!data.title || !data.content || !data.company) {
+    // Parse as FormData instead of JSON
+    const formData = await req.formData();
+    
+    // Extract basic fields
+    const title = formData.get('title') as string | null;
+    const company = formData.get('company') as string | null;
+    const content = formData.get('content') as string | null;
+    const createdByString = formData.get('createdBy') as string | null;
+    const imageFile = formData.get('image') as File | null;
+    
+    // Validate required fields
+    if (!title || !content || !company) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-
+    
+    // Parse createdBy from JSON string
+    let createdBy;
+    try {
+      if (createdByString) {
+        createdBy = JSON.parse(createdByString);
+      }
+    } catch (parseError) {
+      console.error("Error parsing createdBy JSON:", parseError);
+      return NextResponse.json({ error: "Invalid user data format" }, { status: 400 });
+    }
+    
+    // Ensure MongoDB connection
     if (!mongoose.connections[0].readyState) {
       await mongoose.connect(process.env.MONGODB_URI!);
     }
-
-    const topic = new Topic(data);
+    
+    // Prepare topic data
+    const topicData: any = {
+      title,
+      company,
+      content,
+      createdBy,
+    };
+    
+    // Handle image if present
+    if (imageFile) {
+      // Convert File to buffer for storage
+      const buffer = await imageFile.arrayBuffer();
+      
+      // For simple implementation, we'll just log image details
+      // In production, you'd likely:
+      // 1. Upload to a service like Cloudinary or AWS S3
+      // 2. Store the URL in the database
+      console.log(`Received image: ${imageFile.name}, type: ${imageFile.type}, size: ${imageFile.size} bytes`);
+      
+      // Example: If you want to store image metadata
+      topicData.image = {
+        name: imageFile.name,
+        type: imageFile.type,
+        // The actual image upload code would go here
+        // You'd store the URL returned from the upload service
+        // url: await uploadImage(buffer) 
+      };
+    }
+    
+    // Create and save topic
+    const topic = new Topic(topicData);
     await topic.save();
-
+    
     return NextResponse.json({ message: "Topic created successfully", topic }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating topic:", error);
-    return NextResponse.json({ error: "Failed to create topic" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Failed to create topic", 
+      details: error.message 
+    }, { status: 500 });
   }
 }
