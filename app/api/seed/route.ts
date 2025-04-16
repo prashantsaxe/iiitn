@@ -60,14 +60,14 @@ export async function GET(request: Request) {
         accountStatus: "active" as const
       },
       {
-        name: "Priya Sharma",
+        name: "Prashant Saxena",
         email: "prasxhunter@gmail.com",
         password: await bcrypt.hash('password123', 10), // Added password
-        branch: "Electronics",
+        branch: "CSE",
         phoneNumber: "8765432109",
         cgpa: 8.7,
         activeBacklogs: 1,
-        gender: "female" as const,
+        gender: "male" as const,
         hometown: "Mumbai",
         dob: new Date("2001-11-22"),
         photo: "https://randomuser.me/api/portraits/women/2.jpg",
