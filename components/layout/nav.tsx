@@ -50,9 +50,9 @@ export function Nav() {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) {
-        throw new Error("Failed to fetch student profile");
-      }
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch student profile");
+      // }
       return await response.json();
     } catch (error) {
       console.error("Error fetching student profile:", error);
@@ -166,12 +166,26 @@ export function Nav() {
               href="/admin"
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                pathname.startsWith("/admin")
+                isActive("/admin")
                   ? "text-primary font-semibold"
                   : "text-foreground/70"
               )}
             >
               Admin
+            </Link>
+          )}
+
+          {isLoggedIn && session?.user?.role === "admin" && (
+            <Link
+              href="/admin/settings"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                isActive("/admin/settings")
+                  ? "text-primary font-semibold"
+                  : "text-foreground/70"
+              )}
+            >
+              Settings
             </Link>
           )}
 

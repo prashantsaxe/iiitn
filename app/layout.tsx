@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Nav } from "@/components/layout/nav";
-import SessionProvider from "@/components/session-provider";
+import type { Metadata } from "next"
+import "./globals.css"
+import { Inter } from "next/font/google"
+import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/sonner"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Nav } from "@/components/layout/nav"
+import SessionProvider from "@/components/session-provider"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
+export const metadata: Metadata = {
+  title: "Your App Title",
+  description: "Your app description",
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -29,15 +33,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Toaster />
           <SessionProvider>
             <div className="relative flex min-h-screen flex-col">
               <Nav />
-              <div className="flex-1">{children}</div>
+              <main className="flex-1">{children}</main>
             </div>
-            <Toaster />
           </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
