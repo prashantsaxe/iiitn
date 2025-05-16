@@ -177,15 +177,15 @@ export function Nav() {
 
           {isLoggedIn && session?.user?.role === "admin" && (
             <Link
-              href="/admin/settings"
+              href="/admin/bulk-upload"
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                isActive("/admin/settings")
+                isActive("/admin/bulk-upload")
                   ? "text-primary font-semibold"
                   : "text-foreground/70"
               )}
             >
-              Settings
+              Bulk Upload
             </Link>
           )}
 

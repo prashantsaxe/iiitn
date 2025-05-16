@@ -389,130 +389,131 @@ export default function AdminSettingsPage() {
     return categories;
   };
   
-  if (result.detailedErrors && result.detailedErrors.length > 0) {
-    const categories = categorizeErrors(result.detailedErrors);
-    
-    errorMessage = (
-      <div className="space-y-4">
-        <p className="text-muted-foreground">{getErrorExplanation()}</p>
-        
-        <div className="rounded-md border bg-card overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Issue Type</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Count</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">What This Means</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Example Emails</th>
+if (result.detailedErrors && result.detailedErrors.length > 0) {
+  const categories = categorizeErrors(result.detailedErrors);
+  
+  errorMessage = (
+    <div className="space-y-4">
+      <p key="explanation" className="text-muted-foreground">{getErrorExplanation()}</p>
+      
+      <div key="error-table" className="rounded-md border bg-card overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Issue Type</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Count</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">What This Means</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Example Emails</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {Object.entries(categories).map(([category, { count, examples }]) => (
+              <tr key={category} className="hover:bg-muted/30">
+                <td className="px-4 py-3 font-medium">
+                  {category === "Duplicate Email" ? (
+                    <Badge variant="outline" className="bg-amber-50 dark:bg-amber-950/30 text-amber-600 border-amber-200">
+                      Duplicate Email
+                    </Badge>
+                  ) : category === "Validation Error" ? (
+                    <Badge variant="outline" className="bg-red-50 dark:bg-red-950/30 text-red-600 border-red-200">
+                      Validation Error
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline">{category}</Badge>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <Badge variant="outline" className="bg-muted/50">{count}</Badge>
+                </td>
+                <td className="px-4 py-3 text-sm">
+                  {category === "Duplicate Email" ? (
+                    <span>Students with these emails already exist in the database.</span>
+                  ) : category === "Validation Error" ? (
+                    <span>The data for these students doesn't match required format.</span>
+                  ) : category === "Database Error" ? (
+                    <span>There was an error saving these students to the database.</span>
+                  ) : (
+                    <span>Unexpected error occurred with these students.</span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1 max-w-md">
+                    {examples.slice(0, 3).map((email, idx) => (
+                      <Badge key={idx} variant="outline" className="text-xs font-normal">
+                        {email}
+                      </Badge>
+                    ))}
+                    {examples.length > 3 && (
+                      <Badge variant="outline" className="text-xs font-normal">
+                        +{examples.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y">
-              {Object.entries(categories).map(([category, { count, examples }]) => (
-                <tr key={category} className="hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">
-                    {category === "Duplicate Email" ? (
-                      <Badge variant="outline" className="bg-amber-50 dark:bg-amber-950/30 text-amber-600 border-amber-200">
-                        Duplicate Email
-                      </Badge>
-                    ) : category === "Validation Error" ? (
-                      <Badge variant="outline" className="bg-red-50 dark:bg-red-950/30 text-red-600 border-red-200">
-                        Validation Error
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">{category}</Badge>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Badge variant="outline" className="bg-muted/50">{count}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    {category === "Duplicate Email" ? (
-                      <span>Students with these emails already exist in the database.</span>
-                    ) : category === "Validation Error" ? (
-                      <span>The data for these students doesn't match required format.</span>
-                    ) : category === "Database Error" ? (
-                      <span>There was an error saving these students to the database.</span>
-                    ) : (
-                      <span>Unexpected error occurred with these students.</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1 max-w-md">
-                      {examples.slice(0, 3).map((email, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs font-normal">
-                          {email}
-                        </Badge>
-                      ))}
-                      {examples.length > 3 && (
-                        <Badge variant="outline" className="text-xs font-normal">
-                          +{examples.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="all-errors" className="border-muted">
-            <AccordionTrigger className="text-sm">
-              View All Error Details ({result.detailedErrors.length})
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="max-h-60 overflow-y-auto rounded-md border p-4 bg-muted/20">
-                <ul className="space-y-2">
-                  {result.detailedErrors.map((err: {email?: string, error: string}, index: number) => (
-                    <li key={`err-detail-${index}`} className="text-sm flex items-start gap-2">
-                      <span className="text-red-500">•</span>
-                      <span>
-                        {err.email && <span className="font-medium">{err.email}: </span>}
-                        {err.error}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-        
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pt-2">
-          <div className="space-y-1">
-            <h4 className="text-sm font-medium">What can you do?</h4>
-            <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-              {operationMode === "append" && (
-                <>
-                  <li>Switch to <strong>Update</strong> mode if you want to update existing students.</li>
-                  <li>Remove duplicate students from your Excel file before uploading.</li>
-                </>
-              )}
-              {operationMode === "update" && (
-                <>
-                  <li>Check if the data matches exactly what's expected by the system.</li>
-                  <li>Ensure email addresses are correct in your Excel file.</li>
-                </>
-              )}
-              {operationMode === "replace" && (
-                <>
-                  <li>Try again or try the Update mode instead.</li>
-                  <li>Contact an administrator if the problem persists.</li>
-                </>
-              )}
-            </ul>
-          </div>
-          
-          <Button
-            onClick={() => setCurrentTab("validation")}
-            className="bg-muted/80 hover:bg-muted text-foreground">
-            Back to Data Validation
-          </Button>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-    );
-  } else {
+      
+      <Accordion key="accordion" type="single" collapsible className="w-full">
+        <AccordionItem value="all-errors" className="border-muted">
+          <AccordionTrigger className="text-sm">
+            View All Error Details ({result.detailedErrors.length})
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="max-h-60 overflow-y-auto rounded-md border p-4 bg-muted/20">
+              <ul className="space-y-2">
+                {result.detailedErrors.map((err: {email?: string, error: string}, index: number) => (
+                  <li key={`err-detail-${index}`} className="text-sm flex items-start gap-2">
+                    <span className="text-red-500">•</span>
+                    <span>
+                      {err.email && <span className="font-medium">{err.email}: </span>}
+                      {err.error}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      
+      <div key="actions-footer" className="flex flex-col sm:flex-row sm:justify-between gap-4 pt-2">
+        <div className="space-y-1">
+          <h4 className="text-sm font-medium">What can you do?</h4>
+          <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+            {operationMode === "append" && (
+              <>
+                <li key="append-tip-1">Switch to <strong>Update</strong> mode if you want to update existing students.</li>
+                <li key="append-tip-2">Remove duplicate students from your Excel file before uploading.</li>
+              </>
+            )}
+            {operationMode === "update" && (
+              <>
+                <li key="update-tip-1">Check if the data matches exactly what's expected by the system.</li>
+                <li key="update-tip-2">Ensure email addresses are correct in your Excel file.</li>
+              </>
+            )}
+            {operationMode === "replace" && (
+              <>
+                <li key="replace-tip-1">Try again or try the Update mode instead.</li>
+                <li key="replace-tip-2">Contact an administrator if the problem persists.</li>
+              </>
+            )}
+          </ul>
+        </div>
+        
+        <Button
+          key="back-button"
+          onClick={() => setCurrentTab("validation")}
+          className="bg-muted/80 hover:bg-muted text-foreground">
+          Back to Data Validation
+        </Button>
+      </div>
+    </div>
+  );
+} else {
     // Simple error without detailed errors
     errorMessage = (
       <div className="text-center py-2">
