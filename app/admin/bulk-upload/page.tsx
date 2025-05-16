@@ -61,7 +61,7 @@ type UploadStatusType = { type: 'success' | 'error'; message: string | JSX.Eleme
 
 const parseDate = (dateString: string): Date | null => {
   if (!dateString) return null;
-  
+
   // Check if the date is in DD-MM-YYYY format
   const ddmmyyyyMatch = dateString.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
   if (ddmmyyyyMatch) {
@@ -69,7 +69,7 @@ const parseDate = (dateString: string): Date | null => {
     // JavaScript months are 0-indexed, so subtract 1 from the month
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   }
-  
+
   // Try parsing as ISO date (YYYY-MM-DD)
   const date = new Date(dateString);
   return isNaN(date.getTime()) ? null : date;
