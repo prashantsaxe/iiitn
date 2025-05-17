@@ -12,6 +12,20 @@ import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "../shared/ColorUtils";
 import { studentInterface } from "@/lib/db/models/student";
+import {
+  User,
+  GraduationCap,
+  Building,
+  CreditCard,
+  BadgeCheck,
+  Home,
+  Phone,
+  Mail,
+  Calendar,
+  Users,
+  Briefcase,
+  Globe
+} from "lucide-react";
 
 interface EditStudentModalProps {
   studentId: string;
@@ -34,13 +48,13 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
     try {
       setLoading(true);
       const response = await fetch(`/api/admin/students/${studentId}`);
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         setStudent(result.data);
       } else {
@@ -64,12 +78,12 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
 
   const handleSwitchChange = (name: string, checked: boolean) => {
     if (name === "placement.placed") {
-      setStudent(prev => prev ? { 
-        ...prev, 
-        placement: { 
-          ...prev.placement as any, 
-          placed: checked 
-        } 
+      setStudent(prev => prev ? {
+        ...prev,
+        placement: {
+          ...prev.placement as any,
+          placed: checked
+        }
       } : null);
     } else {
       setStudent(prev => prev ? { ...prev, [name]: checked } : null);
@@ -78,28 +92,28 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
 
   const handleNestedInputChange = (parent: string, field: string, value: any) => {
     if (parent === "placement") {
-      setStudent(prev => prev ? { 
-        ...prev, 
-        placement: { 
-          ...prev.placement as any, 
-          [field]: value 
-        } 
+      setStudent(prev => prev ? {
+        ...prev,
+        placement: {
+          ...prev.placement as any,
+          [field]: value
+        }
       } : null);
     } else if (parent === "education") {
-      setStudent(prev => prev ? { 
-        ...prev, 
-        education: { 
-          ...prev.education as any, 
-          [field]: value 
-        } 
+      setStudent(prev => prev ? {
+        ...prev,
+        education: {
+          ...prev.education as any,
+          [field]: value
+        }
       } : null);
     } else if (parent === "socialMedia") {
-      setStudent(prev => prev ? { 
-        ...prev, 
-        socialMedia: { 
-          ...prev.socialMedia as any, 
-          [field]: value 
-        } 
+      setStudent(prev => prev ? {
+        ...prev,
+        socialMedia: {
+          ...prev.socialMedia as any,
+          [field]: value
+        }
       } : null);
     }
   };
@@ -107,7 +121,7 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      
+
       const response = await fetch(`/api/admin/students/${studentId}`, {
         method: 'PUT',
         headers: {
@@ -115,13 +129,13 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
         },
         body: JSON.stringify(student)
       });
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success("Student updated successfully");
         onStudentUpdated();
@@ -142,81 +156,83 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-<DialogContent className="max-w-4xl max-h-[90vh] overflow-auto bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#1c1c1e] dark:via-[#2c2c2e] dark:to-[#3a3a3c] rounded-3xl border border-gray-200/70 dark:border-gray-700/50 shadow-2xl">
-  <DialogHeader className="pb-4">
-    <DialogTitle className="text-2xl font-semibold tracking-tight flex items-center gap-4 text-gray-900 dark:text-white">
-      {!loading && student && (
-        <Avatar className="h-12 w-12 border border-gray-200/70 dark:border-gray-700/50 overflow-hidden">
-          <AvatarImage src={student.photo} />
-          <AvatarFallback className="bg-primary/10 text-primary dark:bg-primary/20">
-            {getInitials(student.name || "")}
-          </AvatarFallback>
-        </Avatar>
-      )}
-      Edit Student
-    </DialogTitle>
-    <DialogDescription className="text-gray-600 dark:text-gray-400">
-      Update student information in the system
-    </DialogDescription>
-  </DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200/70 dark:border-zinc-800 shadow-xl">
+        <DialogHeader className="pb-4 border-b border-gray-100 dark:border-zinc-800">
+          <DialogTitle className="text-2xl font-semibold flex items-center gap-4 text-gray-900 dark:text-white">
+            {!loading && student && (
+              <Avatar className="h-12 w-12 border border-gray-200 dark:border-zinc-700 shadow-sm overflow-hidden">
+                <AvatarImage src={student.photo} />
+                <AvatarFallback className="bg-blue-100 text-blue-700 font-medium dark:bg-blue-900 dark:text-blue-300">
+                  {getInitials(student.name || "")}
+                </AvatarFallback>
+              </Avatar>
+            )}
+            Edit Student Profile
+          </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-400 mt-1">
+            Update student information in the system
+          </DialogDescription>
+        </DialogHeader>
 
         {loading ? (
           <div className="py-12 flex justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 dark:border-gray-700 border-t-primary dark:border-t-primary"></div>
-        </div>
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-400"></div>
+          </div>
         ) : student ? (
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             {/* Personal Information */}
-            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
-  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
-  Personal Information
-</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
+                <User size={18} />
+                Personal Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input 
-                    id="name" 
-                    name="name" 
-                    value={student.name || ""} 
+                  <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Full Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={student.name || ""}
                     onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input 
-                    id="email" 
-                    name="email" 
-                    value={student.email || ""} 
-                    onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                  />
+                  <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email Address</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    <Input
+                      id="email"
+                      name="email"
+                      value={student.email || ""}
+                      onChange={handleInputChange}
+                      className="rounded-lg pl-10 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input 
-                    id="phoneNumber" 
-                    name="phoneNumber" 
-                    value={student.phoneNumber || ""} 
-                    onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                  />
+                  <Label htmlFor="phoneNumber" className="text-gray-700 dark:text-gray-300">Phone Number</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    <Input
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      value={student.phoneNumber || ""}
+                      onChange={handleInputChange}
+                      className="rounded-lg pl-10 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select 
+                  <Label htmlFor="gender" className="text-gray-700 dark:text-gray-300">Gender</Label>
+                  <Select
                     value={student.gender || ""}
                     onValueChange={(value) => handleSelectChange("gender", value)}
                   >
-                    <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                    <SelectTrigger className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
-                    <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                    <SelectContent className="rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-md">
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
@@ -224,169 +240,180 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hometown">Hometown</Label>
-                  <Input 
-                    id="hometown" 
-                    name="hometown" 
-                    value={student.hometown || ""} 
-                    onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                  />
+                  <Label htmlFor="hometown" className="text-gray-700 dark:text-gray-300">Hometown</Label>
+                  <div className="relative">
+                    <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    <Input
+                      id="hometown"
+                      name="hometown"
+                      value={student.hometown || ""}
+                      onChange={handleInputChange}
+                      className="rounded-lg pl-10 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dob">Date of Birth</Label>
-                  <Input 
-                    id="dob" 
-                    name="dob" 
-                    type="date"
-                    value={student.dob ? new Date(student.dob).toISOString().split('T')[0] : ""} 
-                    onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                  />
+                  <Label htmlFor="dob" className="text-gray-700 dark:text-gray-300">Date of Birth</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    <Input
+                      id="dob"
+                      name="dob"
+                      type="date"
+                      value={student.dob ? new Date(student.dob).toISOString().split('T')[0] : ""}
+                      onChange={handleInputChange}
+                      className="rounded-lg pl-10 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="my-6" />
 
             {/* Academic Information */}
-            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
-  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
-            Academic Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
+                <GraduationCap size={18} />
+                Academic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="branch">Branch</Label>
-                  <Select 
+                  <Label htmlFor="branch" className="text-gray-700 dark:text-gray-300">Branch</Label>
+                  <Select
                     value={student.branch || ""}
                     onValueChange={(value) => handleSelectChange("branch", value)}
                   >
-                    <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                    <SelectTrigger className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm">
                       <SelectValue placeholder="Select branch" />
                     </SelectTrigger>
-                    <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
-                      <SelectItem value="CSE">Computer Science</SelectItem>
-                      <SelectItem value="ECE">Electronics</SelectItem>
-                      <SelectItem value="Mech">Mechanical</SelectItem>
-                      <SelectItem value="Civil">Civil</SelectItem>
-                      <SelectItem value="EE">Electrical</SelectItem>
+                    <SelectContent className="rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-md">
+                      <SelectItem value="CSE">CSE (Computer Science)</SelectItem>
+                      <SelectItem value="ECE">ECE (Electronics)</SelectItem>
+                      <SelectItem value="DSA">DSA (Data Science)</SelectItem>
+                      <SelectItem value="AIML">AIML (AI & Machine Learning)</SelectItem>
+                      <SelectItem value="HCIG">HCIG (Human Computer Interaction)</SelectItem>
+                      <SelectItem value="IOT">IOT (Internet of Things)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cgpa">CGPA</Label>
-                  <Input 
-                    id="cgpa" 
-                    name="cgpa" 
+                  <Label htmlFor="cgpa" className="text-gray-700 dark:text-gray-300">CGPA</Label>
+                  <div className="relative">
+                    <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                    <Input
+                      id="cgpa"
+                      name="cgpa"
+                      type="number"
+                      min="0"
+                      max="10"
+                      step="0.01"
+                      value={student.cgpa || ""}
+                      onChange={handleInputChange}
+                      className="rounded-lg pl-10 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="activeBacklogs" className="text-gray-700 dark:text-gray-300">Active Backlogs</Label>
+                  <Input
+                    id="activeBacklogs"
+                    name="activeBacklogs"
                     type="number"
                     min="0"
-                    max="10"
-                    step="0.01"
-                    value={student.cgpa || ""} 
+                    value={student.activeBacklogs || 0}
                     onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="activeBacklogs">Active Backlogs</Label>
-                  <Input 
-                    id="activeBacklogs" 
-                    name="activeBacklogs" 
-                    type="number"
-                    min="0"
-                    value={student.activeBacklogs || 0} 
-                    onChange={handleInputChange}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tenthMarks">10th Marks (%)</Label>
-                  <Input 
-                    id="tenthMarks" 
+                  <Label htmlFor="tenthMarks" className="text-gray-700 dark:text-gray-300">10th Marks (%)</Label>
+                  <Input
+                    id="tenthMarks"
                     type="number"
                     min="0"
                     max="100"
                     step="0.01"
-                    value={student.education?.tenthMarks || ""} 
+                    value={student.education?.tenthMarks || ""}
                     onChange={(e) => handleNestedInputChange("education", "tenthMarks", parseFloat(e.target.value))}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="twelfthMarks">12th Marks (%)</Label>
-                  <Input 
-                    id="twelfthMarks" 
+                  <Label htmlFor="twelfthMarks" className="text-gray-700 dark:text-gray-300">12th Marks (%)</Label>
+                  <Input
+                    id="twelfthMarks"
                     type="number"
                     min="0"
                     max="100"
                     step="0.01"
-                    value={student.education?.twelfthMarks || ""} 
+                    value={student.education?.twelfthMarks || ""}
                     onChange={(e) => handleNestedInputChange("education", "twelfthMarks", parseFloat(e.target.value))}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="my-6" />
 
             {/* Placement Information */}
-            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
-            <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
-            Placement Information</h3>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Switch 
+            <div className="p-5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
+                <Briefcase size={18} />
+                Placement Information
+              </h3>
+              <div className="space-y-5">
+                <div className="flex items-center p-3 bg-gray-50 dark:bg-zinc-900 rounded-lg">
+                  <Switch
                     id="placed"
                     checked={student.placement?.placed || false}
                     onCheckedChange={(checked) => handleSwitchChange("placement.placed", checked)}
+                    className="data-[state=checked]:bg-green-600"
                   />
-                  <Label htmlFor="placed" className="ml-2">Placed</Label>
+                  <Label htmlFor="placed" className="ml-2 font-medium text-gray-700 dark:text-gray-300">
+                    {student.placement?.placed ? "Student is placed" : "Student is not placed"}
+                  </Label>
                 </div>
 
                 {student.placement?.placed && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
                     <div className="space-y-2">
-                      <Label htmlFor="company">Company</Label>
-                      <Input 
-                        id="company" 
-                        value={student.placement?.company || ""} 
-                        onChange={(e) => handleNestedInputChange("placement", "company", e.target.value)}
-                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                      />
+                      <Label htmlFor="company" className="text-gray-700 dark:text-gray-300">Company</Label>
+                      <div className="relative">
+                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <Input
+                          id="company"
+                          value={student.placement?.company || ""}
+                          onChange={(e) => handleNestedInputChange("placement", "company", e.target.value)}
+                          className="rounded-lg pl-10 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="package">Package (₹)</Label>
-                      <Input 
-                        id="package" 
-                        type="number"
-                        min="0"
-                        value={student.placement?.package || ""} 
-                        onChange={(e) => handleNestedInputChange("placement", "package", parseFloat(e.target.value))}
-                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                      />
+                      <Label htmlFor="package" className="text-gray-700 dark:text-gray-300">Package (₹)</Label>
+                      <div className="relative">
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <Input
+                          id="package"
+                          type="number"
+                          min="0"
+                          value={student.placement?.package || ""}
+                          onChange={(e) => handleNestedInputChange("placement", "package", parseFloat(e.target.value))}
+                          className="rounded-lg pl-10 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="placementType">Placement Type</Label>
-                      <Select 
+                      <Label htmlFor="placementType" className="text-gray-700 dark:text-gray-300">Placement Type</Label>
+                      <Select
                         value={student.placement?.type || ""}
                         onValueChange={(value) => handleNestedInputChange("placement", "type", value)}
                       >
-                        <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                        <SelectTrigger className="rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
-                        <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                        <SelectContent className="rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-md">
                           <SelectItem value="intern">Internship</SelectItem>
                           <SelectItem value="fte">Full-Time</SelectItem>
                           <SelectItem value="both">Both</SelectItem>
@@ -394,79 +421,96 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="offerDate">Offer Date</Label>
-                      <Input 
-                        id="offerDate" 
-                        type="date"
-                        value={student.placement?.offerDate ? new Date(student.placement.offerDate).toISOString().split('T')[0] : ""} 
-                        onChange={(e) => handleNestedInputChange("placement", "offerDate", e.target.value)}
-                          className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
-                      />
+                      <Label htmlFor="offerDate" className="text-gray-700 dark:text-gray-300">Offer Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                        <Input
+                          id="offerDate"
+                          type="date"
+                          value={student.placement?.offerDate ? new Date(student.placement.offerDate).toISOString().split('T')[0] : ""}
+                          onChange={(e) => handleNestedInputChange("placement", "offerDate", e.target.value)}
+                          className="rounded-lg pl-10 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            <Separator />
+            <Separator className="my-6" />
 
             {/* Account Status */}
-            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
-  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
-            Account Status</h3>
+            <div className="p-5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
+                <BadgeCheck size={18} />
+                Account Status
+              </h3>
               <div className="space-y-2">
-                <Select 
+                <Label htmlFor="accountStatus" className="text-gray-700 dark:text-gray-300">Status</Label>
+                <Select
                   value={student.accountStatus || "active"}
                   onValueChange={(value) => handleSelectChange("accountStatus", value)}
                 >
-                  <SelectTrigger   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
+                  <SelectTrigger className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent   className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
->
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectContent className="rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-md">
+                    <SelectItem value="active">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                        Active
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="inactive">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
+                        Inactive
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="blocked">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+                        Blocked
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             {/* Social Media Links */}
-            <div className="p-6 rounded-lg bg-white dark:bg-[#1e1e1e] shadow-md">
-  <h3 className="text-lg font-medium text-primary dark:text-primary/80 mb-4">
-            Social Media</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-blue-700 dark:text-blue-400 mb-4">
+                <Globe size={18} />
+                Social Media
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="linkedin">LinkedIn</Label>
-                  <Input 
-                    id="linkedin" 
-                    value={student.socialMedia?.linkedin || ""} 
+                  <Label htmlFor="linkedin" className="text-gray-700 dark:text-gray-300">LinkedIn</Label>
+                  <Input
+                    id="linkedin"
+                    value={student.socialMedia?.linkedin || ""}
                     onChange={(e) => handleNestedInputChange("socialMedia", "linkedin", e.target.value)}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="github">GitHub</Label>
-                  <Input 
-                    id="github" 
-                    value={student.socialMedia?.github || ""} 
+                  <Label htmlFor="github" className="text-gray-700 dark:text-gray-300">GitHub</Label>
+                  <Input
+                    id="github"
+                    value={student.socialMedia?.github || ""}
                     onChange={(e) => handleNestedInputChange("socialMedia", "github", e.target.value)}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="portfolio">Portfolio</Label>
-                  <Input 
-                    id="portfolio" 
-                    value={student.socialMedia?.portfolio || ""} 
+                  <Label htmlFor="portfolio" className="text-gray-700 dark:text-gray-300">Portfolio</Label>
+                  <Input
+                    id="portfolio"
+                    value={student.socialMedia?.portfolio || ""}
                     onChange={(e) => handleNestedInputChange("socialMedia", "portfolio", e.target.value)}
-                      className="rounded-xl bg-gray-100/50 dark:bg-gray-800/30 border-0 focus-visible:ring-2 focus-visible:ring-primary/30"
-
+                    className="rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-sm"
                   />
                 </div>
               </div>
@@ -474,23 +518,23 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
           </div>
         ) : null}
 
-<DialogFooter className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800/30">
-  <Button
-    variant="outline"
-    onClick={onClose}
-    className="rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60"
-  >
-    Cancel
-  </Button>
-  <Button
-    onClick={handleSubmit}
-    disabled={loading}
-    className="rounded-full bg-primary hover:bg-primary/90 text-white shadow-md"
-  >
-    {loading ? "Saving..." : "Save Changes"}
-  </Button>
-</DialogFooter>
-</DialogContent>
+        <DialogFooter className="mt-6 pt-4 border-t border-gray-100 dark:border-zinc-800 gap-2">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md min-w-[100px]"
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

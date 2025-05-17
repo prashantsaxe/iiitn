@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { 
-  Table, TableBody, TableCell, TableHead, 
-  TableHeader, TableRow 
+import {
+  Table, TableBody, TableCell, TableHead,
+  TableHeader, TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials, getCGPAColor } from "../shared/ColorUtils";
@@ -39,7 +38,7 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState("");
 
-  const handleEditClick = (studentId: string) => {
+  const handleRowClick = (studentId: string) => {
     setSelectedStudentId(studentId);
     setEditModalOpen(true);
   };
@@ -47,6 +46,31 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
   const handleStudentUpdated = () => {
     if (onStudentUpdated) {
       onStudentUpdated();
+    }
+  };
+
+  // Function to get placement type color
+  const getPlacementTypeColor = (type?: string) => {
+    switch (type) {
+      case 'intern':
+        return "bg-blue-50 text-blue-700 border-blue-100";
+      case 'fte':
+        return "bg-purple-50 text-purple-700 border-purple-100";
+      case 'both':
+        return "bg-indigo-50 text-indigo-700 border-indigo-100";
+      default:
+        return "bg-green-50 text-green-700 border-green-100";
+    }
+  };
+
+  // Format package amount based on type
+  const formatPackage = (amount?: number, type?: string) => {
+    if (!amount) return "—";
+
+    if (type === 'intern') {
+      return `₹${(amount / 1000).toFixed(1)}K/month`;
+    } else {
+      return `₹${(amount / 100000).toFixed(1)}L/annum`;
     }
   };
 
@@ -62,7 +86,7 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
       </Card>
     );
   }
-  
+
   if (error) {
     return (
       <Card className="border border-red-200/70 shadow-sm bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden">
@@ -72,7 +96,7 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
       </Card>
     );
   }
-  
+
   if (students.length === 0) {
     return (
       <Card className="border border-gray-200/70 shadow-sm bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden">
@@ -82,7 +106,7 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
       </Card>
     );
   }
-  
+
   return (
     <>
       <Card className="border border-gray-200/70 shadow-sm bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden">
@@ -103,13 +127,17 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
                 <TableHead className="text-gray-500 font-medium">CGPA</TableHead>
                 <TableHead className="text-gray-500 font-medium">Backlogs</TableHead>
                 <TableHead className="text-gray-500 font-medium">Placement</TableHead>
-                <TableHead className="text-gray-500 font-medium">Status</TableHead>
-                <TableHead className="text-right text-gray-500 font-medium">Actions</TableHead>
+                <TableHead className="text-gray-500 font-medium">Company</TableHead>
+                <TableHead className="text-gray-500 font-medium">Package</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {students.map((student) => (
-                <TableRow key={student._id} className="hover:bg-gray-50/80">
+                <TableRow
+                  key={student._id}
+                  className="hover:bg-gray-50/80 cursor-pointer transition-colors"
+                  onClick={() => handleRowClick(student._id)}
+                >
                   <TableCell className="font-medium text-gray-900">
                     <div className="flex items-center gap-3">
                       <Avatar className="border border-gray-200/70">
@@ -130,63 +158,40 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
                   </TableCell>
                   <TableCell>
                     <span className={
-                      student.activeBacklogs > 0 
+                      student.activeBacklogs > 0
                         ? "text-red-600 bg-red-50/80 rounded-full px-2 py-0.5 text-sm"
                         : "text-green-600 bg-green-50/80 rounded-full px-2 py-0.5 text-sm"
                     }>
                       {student.activeBacklogs}
                     </span>
                   </TableCell>
+                  {/* Placement Status Column */}
                   <TableCell>
                     {student.placement.placed ? (
-                      <div className="space-y-1">
-                        <span className="text-sm text-gray-800 bg-gray-100/80 px-2 py-0.5 rounded-full">
-                          {student.placement.type === 'intern' ? 'Intern' : 
-                          student.placement.type === 'fte' ? 'FTE' : 
-                          student.placement.type === 'both' ? 'Both' : 'Placed'}
-                        </span>
-                        <div className="text-xs text-gray-500">
-                          {student.placement.company} – 
-                          {student.placement.type === 'intern' ? 
-                            `₹${(student.placement.package! / 1000).toFixed(1)}K/month` : 
-                            `₹${(student.placement.package! / 100000).toFixed(1)}L/annum`
-                          }
-                        </div>
-                      </div>
+                      <span className={`text-sm px-2 py-0.5 rounded-full border ${getPlacementTypeColor(student.placement.type)}`}>
+                        {student.placement.type === 'intern' ? 'Internship' :
+                          student.placement.type === 'fte' ? 'Full-Time' :
+                            student.placement.type === 'both' ? 'Intern + FTE' : 'Placed'}
+                      </span>
                     ) : (
                       <span className="text-sm text-gray-500 bg-gray-100/80 px-2 py-0.5 rounded-full">
                         Not Placed
                       </span>
-                    )}  
+                    )}
                   </TableCell>
+                  {/* Company Column */}
                   <TableCell>
-                    <span className={
-                      student.accountStatus === 'active'
-                        ? "text-green-700 bg-green-50/80 border border-green-100/70 rounded-full px-2 py-0.5 text-sm"
-                        : "text-red-700 bg-red-50/80 border border-red-100/70 rounded-full px-2 py-0.5 text-sm"
-                    }>
-                      {student.accountStatus}
+                    <span className="text-sm text-gray-700">
+                      {student.placement.placed ? student.placement.company || "—" : "—"}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-primary hover:text-primary/90 hover:bg-primary/10 rounded-full"
-                        asChild
-                      >
-                        <a href={`/admin/students/${student._id}`}>View</a>
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-primary hover:text-primary/90 hover:bg-primary/10 rounded-full"
-                        onClick={() => handleEditClick(student._id)}
-                      >
-                        Edit
-                      </Button>
-                    </div>
+                  {/* Package/Stipend Column */}
+                  <TableCell>
+                    <span className={`text-sm ${student.placement.placed ? "text-emerald-700 font-medium" : "text-gray-500"}`}>
+                      {student.placement.placed
+                        ? formatPackage(student.placement.package, student.placement.type)
+                        : "—"}
+                    </span>
                   </TableCell>
                 </TableRow>
               ))}
@@ -195,7 +200,7 @@ export function StudentTable({ students, totalCount, loading, error, onStudentUp
         </CardContent>
       </Card>
 
-      <EditStudentModal 
+      <EditStudentModal
         studentId={selectedStudentId}
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}

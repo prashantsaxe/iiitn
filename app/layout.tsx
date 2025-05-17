@@ -7,14 +7,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Nav } from "@/components/layout/nav";
 import SessionProvider from "@/components/session-provider";
 import FocusRingFix from "@/components/focus-ring-fix";
+import { AppLayout } from '@/components/layout/AppLayout';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
+export const metadata: Metadata = {
+  title: "Your App Title",
+  description: "Your app description",
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -29,16 +34,16 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >          <SessionProvider>
+        >
+          <SessionProvider>
             <FocusRingFix />
-            <div className="relative flex min-h-screen flex-col">
-              <Nav />
-              <div className="flex-1">{children}</div>
-            </div>
+            <AppLayout>
+              {children}
+            </AppLayout>
             <Toaster />
           </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
