@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Nav } from "@/components/layout/nav"
 import SessionProvider from "@/components/session-provider"
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -35,10 +36,9 @@ export default function RootLayout({
         >
           <Toaster />
           <SessionProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <Nav />
-              <main className="flex-1">{children}</main>
-            </div>
+            <AppLayout>
+              {children}
+            </AppLayout>
           </SessionProvider>
         </ThemeProvider>
       </body>
