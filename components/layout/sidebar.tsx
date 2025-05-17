@@ -64,56 +64,68 @@ export function Sidebar({ className }: SidebarProps) {
     const { data: session } = useSession();
     const pathname = usePathname();
     const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
+    const [expanded, setExpanded] = useState(false); // Rename open to expanded for clarity
+    const [collapsed, setCollapsed] = useState(true); // Default to collapsed
     const isDesktop = useMediaQuery('(min-width: 1024px)');
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const { student } = useStudentStore();
     const clearStudent = useStudentStore((state) => state.clearStudent);
 
-    // Initialize from localStorage and handle window resize
+    // Initialize sidebar state
     useEffect(() => {
         setMounted(true);
 
-        // Initialize collapsed state from localStorage if available
+        // Default to expanded on desktop, collapsed on mobile
+        const savedExpanded = localStorage.getItem('sidebarExpanded');
+        if (savedExpanded !== null) {
+            setExpanded(savedExpanded === 'true');
+        } else {
+            setExpanded(isDesktop); // Default expanded on desktop only
+        }
+
+        // Always keep collapsed state from localStorage if available
         const savedCollapsed = localStorage.getItem('sidebarCollapsed');
         if (savedCollapsed !== null) {
             setCollapsed(savedCollapsed === 'true');
         }
-    }, []);
+    }, [isDesktop]);
 
-    // Save collapsed state to localStorage when it changes
+    // Save state changes to localStorage
     useEffect(() => {
         if (mounted) {
             localStorage.setItem('sidebarCollapsed', collapsed.toString());
+            localStorage.setItem('sidebarExpanded', expanded.toString());
         }
-    }, [collapsed, mounted]);
-
-    useEffect(() => {
-        // Set initial state based on screen size
-        setOpen(isDesktop);
-    }, [isDesktop]);
-
-    // Close sidebar when navigating on mobile
-    useEffect(() => {
-        if (!isDesktop) {
-            setOpen(false);
-        }
-    }, [pathname, isDesktop]);
-
-    const handleLogout = () => {
-        signOut({ callbackUrl: "/" });
-        clearStudent(); // Clear student data from the store
-    };
+    }, [collapsed, expanded, mounted]);
 
     const toggleCollapsed = () => {
         const newState = !collapsed;
         setCollapsed(newState);
-        localStorage.setItem('sidebarCollapsed', newState.toString());
+        // If expanding, also expand the sidebar if it's not already
+        if (!newState && !expanded) {
+            setExpanded(true);
+        }
 
-        // Dispatch a custom event to notify layout of the change
-        window.dispatchEvent(new Event('sidebarToggle'));
+        // Dispatch event for layout
+        window.dispatchEvent(new CustomEvent('sidebarStateChange', {
+            detail: { isExpanded: expanded, isCollapsed: newState }
+        }));
+    };
+
+    const toggleExpanded = () => {
+        const newState = !expanded;
+        setExpanded(newState);
+
+        // Dispatch event for layout
+        window.dispatchEvent(new CustomEvent('sidebarStateChange', {
+            detail: { isExpanded: newState, isCollapsed: collapsed }
+        }));
+    };
+
+    const handleLogout = () => {
+        signOut({ callbackUrl: "/" });
+        clearStudent(); // Clear student data from the store
     };
 
     const isAdmin = session?.user?.role === 'admin';
@@ -271,33 +283,24 @@ export function Sidebar({ className }: SidebarProps) {
     return (
         <TooltipProvider delayDuration={300}>
             <>
-                {/* Mobile Overlay */}
-                {open && !isDesktop && (
-                    <div
-                        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-                        onClick={() => setOpen(false)}
-                    />
-                )}
-
-                {/* Toggle Button (Mobile only) */}
+                {/* Toggle Button for Expanding/Collapsing (Mobile) */}
                 <div className="fixed bottom-4 right-4 z-50 lg:hidden">
                     <Button
                         variant="default"
                         size="icon"
                         className="h-10 w-10 rounded-full shadow-lg bg-primary"
-                        onClick={() => setOpen(!open)}
+                        onClick={toggleExpanded}
                     >
-                        {open ? <X size={18} /> : <Menu size={18} />}
+                        {expanded ? <ChevronsLeft size={18} /> : <ChevronsRight size={18} />}
                     </Button>
                 </div>
 
-                {/* Sidebar */}
+                {/* Sidebar - Always visible, never completely hidden */}
                 <div
                     className={cn(
                         "fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col",
-                        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-                        collapsed ? "lg:w-16" : "lg:w-64", // Change width based on collapsed state
-                        "w-64", // Default width for mobile
+                        expanded ? "translate-x-0" : "", // Never completely off-screen
+                        collapsed ? "w-16" : "w-64", // Width based on collapsed state
                         className
                     )}
                 >
@@ -315,13 +318,14 @@ export function Sidebar({ className }: SidebarProps) {
                         </Link>
                     </div>
 
-                    {/* Collapse Toggle Button (Desktop Only) */}
-                    <div className="hidden lg:flex justify-end px-2 mt-2">
+                    {/* Collapse Toggle Button */}
+                    <div className="flex justify-end px-2 mt-2">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={toggleCollapsed}
                             className="h-7 w-7 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                         >
                             {collapsed ?
                                 <ChevronsRight className="h-4 w-4 text-gray-500" /> :
