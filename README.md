@@ -93,3 +93,51 @@ EXCEL_FILE_NAMES=student_data.xlsx,placement_details.xls
 
 # Accepted File Types for the application
 ACCEPTED_FILE_TYPES="xlsx,xls"
+
+
+
+
+
+
+
+Based on the features we've developed, here are the main active URLs and API endpoints in your application:
+
+**I. Frontend Pages (Accessible via Browser):**
+
+*   **Admin Section:**
+    *   `/admin/forms`: Lists all forms created by the admin.
+    *   `/admin/forms/create`: Page to build and create a new form.
+    *   `/admin/forms/edit/[formId]`: Page to edit an existing form (e.g., `/admin/forms/edit/123xyz`).
+    *   `/admin/forms/[formId]/responses`: Page for admins to view all submitted responses for a specific form (e.g., `/admin/forms/123xyz/responses`).
+*   **Student Section:**
+    *   `/student/dashboard`: Student's dashboard listing available forms and their submission status.
+    *   `/forms/[formId]`: Public-facing page for students to view and fill out a specific form (e.g., `/forms/abc789`).
+    *   `/student/forms/[formId]/submission`: Page for a student to view their own submitted response for a specific form (e.g., `/student/forms/abc789/submission`).
+*   **Authentication (NextAuth.js default paths):**
+    *   `/auth/signin`: User login page.
+    *   `/auth/signout`: Handles user logout.
+    *   (Other NextAuth paths like `/auth/error`, `/auth/verify-request` are also active if configured).
+
+**II. API Endpoints (Backend Routes):**
+
+*   **Admin Form Management:**
+    *   `GET /api/admin/forms`: Retrieves all forms for the logged-in admin.
+    *   `POST /api/admin/forms`: Creates a new form.
+    *   `GET /api/admin/forms/[formId]`: Retrieves a specific form for editing by its ID.
+    *   `PUT /api/admin/forms/[formId]`: Updates an existing form by its ID.
+    *   `DELETE /api/admin/forms/[formId]`: Deletes a form by its ID.
+*   **Admin Response Management:**
+    *   `GET /api/admin/forms/[formId]/responses`: Retrieves all responses for a specific form (for admin view).
+    *   `GET /api/admin/forms/[formId]/export`: Exports responses for a specific form to an Excel file.
+*   **Student/Public Form Interaction:**
+    *   `GET /api/forms/[formId]`: Retrieves a published form's structure for students to fill (includes auto-fill logic).
+    *   `POST /api/forms/[formId]/responses`: Handles submission of a student's response to a form.
+*   **Student-Specific Data:**
+    *   `GET /api/student/forms`: Retrieves a list of forms relevant to the logged-in student for their dashboard.
+    *   `GET /api/student/forms/[formId]/submission`: Retrieves the logged-in student's specific submission for a given form.
+*   **File Uploads:**
+    *   `POST /api/upload`: Handles file uploads (now configured for Cloudinary).
+*   **Authentication (NextAuth.js):**
+    *   `GET /api/auth/[...nextauth]`: All NextAuth.js authentication API routes (e.g., session management, provider callbacks).
+
+This list covers the primary routes that enable the functionalities we've built.
