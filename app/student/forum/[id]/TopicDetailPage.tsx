@@ -10,12 +10,12 @@ import {
   Send,
   MessageCircle,
   Share2,
-  Copy
+  Copy,
 } from "lucide-react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-
+import Image from "next/image";
 // UI components imports remain the same
 import {
   Card,
@@ -56,11 +56,13 @@ interface Topic {
   likes: {
     count: number;
   };
-  isLiked?: boolean; // New field that indicates if the current user has liked this topic
+  isLiked?: boolean;
   commentsCount: number;
   createdAt: string;
   updatedAt?: string;
   tags?: string[];
+
+  images?: string[];
 }
 
 interface Comment {
@@ -168,11 +170,15 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
         },
       });
 
-      setComments((prevComments) => [...prevComments, ...response.data.comments]);
+      setComments((prevComments) => [
+        ...prevComments,
+        ...response.data.comments,
+      ]);
       setHasMoreComments(response.data.hasMore || false);
 
       if (response.data.comments && response.data.comments.length > 0) {
-        const lastComment = response.data.comments[response.data.comments.length - 1];
+        const lastComment =
+          response.data.comments[response.data.comments.length - 1];
         setLastCommentDate(lastComment.createdAt);
       }
     } catch (error) {
@@ -194,7 +200,7 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
       const response = await axios.post(`/api/forum/topics/${id}/vote`, {
         userId,
       });
-      
+
       // Update the topic with the response data
       if (response.data.topic) {
         setTopic(response.data.topic);
@@ -208,7 +214,7 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
   // NEW: Handle share functionality
   const handleShare = async (method: string) => {
     const shareUrl = `${window.location.origin}/student/forum/${id}`;
-    
+
     switch (method) {
       case "copy":
         try {
@@ -219,17 +225,32 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
           toast.error("Failed to copy link. Please try again.");
         }
         break;
-      
+
       case "whatsapp":
-        window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this post: ${shareUrl}`)}`, "_blank");
+        window.open(
+          `https://wa.me/?text=${encodeURIComponent(
+            `Check out this post: ${shareUrl}`
+          )}`,
+          "_blank"
+        );
         break;
-        
+
       case "linkedin":
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank");
+        window.open(
+          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+            shareUrl
+          )}`,
+          "_blank"
+        );
         break;
-        
+
       case "twitter":
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this post: ${shareUrl}`)}`, "_blank");
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            `Check out this post: ${shareUrl}`
+          )}`,
+          "_blank"
+        );
         break;
     }
   };
@@ -239,7 +260,7 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
       router.push("/api/auth/signin");
       return;
     }
-  
+
     try {
       const response = await axios.post(`/api/forum/topics/${id}/comments`, {
         content: newComment,
@@ -248,10 +269,10 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
           name: userName,
         },
       });
-  
+
       // Add the new comment to the beginning of the comments array
       setComments((prev) => [response.data.comment, ...prev]);
-      
+
       // Update the topic's commentsCount by incrementing it
       setTopic((prevTopic) => {
         if (!prevTopic) return null;
@@ -260,10 +281,10 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
           commentsCount: (prevTopic.commentsCount || 0) + 1,
         };
       });
-      
+
       // Clear the comment input
       setNewComment("");
-      
+
       // Show success toast
       toast.success("Comment added successfully!");
     } catch (err) {
@@ -274,7 +295,7 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
 
   // Leave all the imports and functions as they are, just replace the return section:
 
-return (
+  return (
     <div className="container mx-auto px-4 py-8">
       {/* Back button */}
       <div className="mb-6">
@@ -285,7 +306,7 @@ return (
           </Button>
         </Link>
       </div>
-  
+
       {/* Topic card */}
       <Card className="border">
         <CardHeader className="pb-2">
@@ -303,9 +324,37 @@ return (
             </span>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           <p>{topic?.content}</p>
+
+          {/* Display images from the images array */}
+          {topic?.images && topic.images.length > 0 && (
+            <div className="mt-6 mb-4">
+              <div className="flex flex-wrap gap-3">
+                {topic.images.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className="relative h-64 w-full sm:w-[calc(50%-6px)] lg:w-[calc(33.33%-8px)] rounded-md overflow-hidden border"
+                  >
+                    <Image
+                      src={imageUrl}
+                      alt={`Topic image ${index + 1}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-contain"
+                      onError={(e) => {
+                        console.error("Image failed to load:", imageUrl);
+                        // Replace with a placeholder image
+                        (e.target as HTMLImageElement).src =
+                          "/placeholder-image.png";
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 mt-4">
             {topic?.tags?.map((tag) => (
               <Button key={tag} variant="secondary" size="sm">
@@ -314,7 +363,7 @@ return (
             ))}
           </div>
         </CardContent>
-        
+
         {/* Simplified action bar with only Like and Share at bottom left */}
         <CardFooter className="flex border-t pt-3">
           <div className="flex space-x-4">
@@ -323,22 +372,28 @@ return (
               variant="ghost"
               size="sm"
               onClick={handleLikeToggle}
-              className={`flex items-center hover:bg-transparent ${topic?.isLiked ? "text-blue-600" : ""}`}
+              className={`flex items-center hover:bg-transparent ${
+                topic?.isLiked ? "text-blue-600" : ""
+              }`}
               disabled={status === "unauthenticated" || !userId}
-              title={status === "unauthenticated" ? "Please sign in to like" : ""}
+              title={
+                status === "unauthenticated" ? "Please sign in to like" : ""
+              }
             >
-              <ThumbsUp 
-                className={`h-5 w-5 mr-1.5 ${topic?.isLiked ? "fill-blue-600" : ""}`} 
+              <ThumbsUp
+                className={`h-5 w-5 mr-1.5 ${
+                  topic?.isLiked ? "fill-blue-600" : ""
+                }`}
               />
               <span>{topic?.likes?.count || 0}</span>
             </Button>
-            
+
             {/* Share dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="flex items-center hover:bg-transparent"
                 >
                   <Send className="h-5 w-5 mr-1.5" />
@@ -362,32 +417,34 @@ return (
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
+
           {/* Comment count as text only */}
           <div className="text-sm text-muted-foreground flex items-center ml-auto">
             <MessageCircle className="h-4 w-4 mr-1.5" />
             <span>
-              {topic?.commentsCount || 0} {topic?.commentsCount === 1 ? "Comment" : "Comments"}
+              {topic?.commentsCount || 0}{" "}
+              {topic?.commentsCount === 1 ? "Comment" : "Comments"}
             </span>
           </div>
         </CardFooter>
       </Card>
-  
-      {/* Comment form */}
-      <div className="mt-8" id="comment-form">
+
+      {/* Comment form */}      <div className="mt-8" id="comment-form">
         <Label htmlFor="comment">Leave a comment</Label>
-        <Textarea
-          id="comment"
-          placeholder={
-            status === "unauthenticated"
-              ? "Please sign in to comment"
-              : "Write your comment..."
-          }
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className="mb-2"
-          disabled={status === "unauthenticated" || !userId}
-        />
+        <div className="relative text-input-wrapper" style={{ marginBottom: "12px", marginTop: "4px" }}>
+          <Textarea
+            id="comment"
+            placeholder={
+              status === "unauthenticated"
+                ? "Please sign in to comment"
+                : "Write your comment..."
+            }
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="mb-2"
+            disabled={status === "unauthenticated" || !userId}
+          />
+        </div>
         <Button
           onClick={handleAddComment}
           disabled={
@@ -397,7 +454,7 @@ return (
           <Send className="w-4 h-4 mr-1" />
           {status === "unauthenticated" ? "Sign In to Comment" : "Post Comment"}
         </Button>
-  
+
         {status === "unauthenticated" && (
           <div className="mt-2 text-sm text-gray-500">
             <Link
@@ -410,20 +467,20 @@ return (
           </div>
         )}
       </div>
-  
+
       {/* Comments section */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">
           <MessageCircle className="inline-block w-5 h-5 mr-2" />
           Comments ({topic?.commentsCount || 0})
         </h2>
-  
+
         {comments.length === 0 && !commentsLoading && (
           <div className="py-4 text-center text-gray-500">
             No comments yet. Be the first to comment!
           </div>
         )}
-  
+
         {comments.map((comment) => (
           <Card key={comment._id} className="mb-4 border">
             <CardContent className="pt-4">
@@ -452,14 +509,14 @@ return (
             </CardContent>
           </Card>
         ))}
-  
+
         {commentsLoading && (
           <div className="py-4 text-center">
             <div className="spinner"></div>
             <p>Loading comments...</p>
           </div>
         )}
-  
+
         {hasMoreComments && !commentsLoading && (
           <Button
             variant="outline"

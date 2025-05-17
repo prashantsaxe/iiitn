@@ -148,7 +148,108 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* ...existing code... */
+/* Fix for input and textarea components */
+/* Prevent overflow and layout shifts on focus */
+input, 
+textarea, 
+select, 
+button,
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"],
+[data-slot="combobox-input"],
+.form-input {
+  position: relative;
+  z-index: 0;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+input:focus-visible, 
+textarea:focus-visible,
+select:focus-visible,
+[data-slot="input"]:focus-visible,
+[data-slot="textarea"]:focus-visible,
+[data-slot="select-trigger"]:focus-visible,
+[data-slot="combobox-input"]:focus-visible,
+.form-input:focus-visible,
+[role="combobox"]:focus-within,
+[role="listbox"]:focus-within {
+  position: relative !important;
+  z-index: 1 !important;
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4)) !important;
+  outline: none !important;
+  border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
+  transform: translateZ(0);
+}
+
+/* Form element focus fixes - comprehensive selectors */
+.input,
+.select,
+.textarea,
+.datepicker,
+.custom-input,
+[type="text"],
+[type="email"],
+[type="password"],
+[type="number"],
+[type="date"],
+[type="datetime-local"],
+[type="month"],
+[type="search"],
+[type="tel"],
+[type="time"],
+[type="week"],
+[type="url"],
+[contenteditable],
+.rdp-input,
+.search-input {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 0;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Focus styles for form elements */
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible,
+.datepicker:focus-visible,
+.custom-input:focus-visible,
+[type="text"]:focus-visible,
+[type="email"]:focus-visible,
+[type="password"]:focus-visible,
+[type="number"]:focus-visible,
+[type="date"]:focus-visible,
+[type="datetime-local"]:focus-visible,
+[type="month"]:focus-visible,
+[type="search"]:focus-visible,
+[type="tel"]:focus-visible,
+[type="time"]:focus-visible,
+[type="week"]:focus-visible,
+[type="url"]:focus-visible,
+[contenteditable]:focus-visible,
+.rdp-input:focus-visible,
+.search-input:focus-visible {
+  position: relative !important;
+  z-index: 1 !important;
+  transform: translateZ(0);
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4)) !important;
+  border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
+  outline: none !important;
+}
+
+/* Special handling for search inputs and custom inputs */
+input[type="search"]:focus-visible,
+.search-input:focus-visible,
+input[role="searchbox"]:focus-visible,
+[data-input-type="search"]:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4)) !important;
+  border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
+  outline: none !important;
+  z-index: 1;
+  position: relative;
+}
 
 /* Apple UI enhancements - add at the end of your file */
 .apple-nav {
@@ -258,4 +359,215 @@ input[type=number] {
 
 .dark .apple-scrollbar {
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Custom scrollbar for filter sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Additional UI fixes for specific components */
+#comment-form textarea {
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+#comment-form .relative {
+  margin-bottom: 4px;
+}
+
+/* Additional fixes for specific UI components */
+/* Fix for dropdowns and selects */
+[role="combobox"],
+[role="listbox"],
+.select-wrapper,
+.input-wrapper {
+  position: relative;
+  z-index: 0;
+}
+
+/* Ensure popover content doesn't get cut off */
+[data-radix-popper-content-wrapper] {
+  z-index: 50 !important;
+}
+
+/* Fix for autocomplete inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--background) inset, 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4)) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
+}
+
+/* Fix for input group components */
+.input-group {
+  position: relative;
+}
+
+.input-group input:focus-visible,
+.input-group textarea:focus-visible,
+.input-group select:focus-visible {
+  /* Ensure the focus ring doesn't get cut off */
+  margin: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Input wrapper utility classes */
+.input-wrapper {
+  position: relative;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.input-wrapper-sm {
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+.input-wrapper-lg {
+  position: relative;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  width: 100%;
+}
+
+/* Specific spacing for form elements */
+form label + .input-wrapper,
+form label + input,
+form label + textarea,
+form label + select,
+.form-label + .input-wrapper,
+.form-label + input,
+.form-label + textarea,
+.form-label + select {
+  margin-top: 4px !important;
+}
+
+/* Fix for the specific issue with inputs getting too large on focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[data-slot="input"]:focus-visible,
+[data-slot="textarea"]:focus-visible,
+[data-slot="select-trigger"]:focus-visible {
+  margin: 0 !important;
+  height: auto !important;
+  transform: translateZ(0) !important;
+}
+
+/* Specific fix for forum search component */
+.forum-search-wrapper {
+  position: relative;
+  z-index: 10;
+}
+
+.forum-search-wrapper input:focus-visible {
+  z-index: 11;
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4));
+  border-color: var(--ring, rgba(99, 102, 241, 0.8));
+  outline: none;
+}
+
+.forum-search-wrapper button,
+.forum-search-wrapper .search-button {
+  z-index: 12;
+  box-shadow: none !important;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+  margin: 0;
+  height: 28px;
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--background);
+  transition: all 0.2s ease;
+}
+
+.forum-search-wrapper button:hover {
+  background-color: var(--primary-light, rgba(59, 130, 246, 0.1));
+}
+
+/* Search button animation */
+.forum-search-wrapper button svg {
+  transition: transform 0.2s ease;
+}
+
+.forum-search-wrapper button:hover,
+.forum-search-wrapper .search-button:hover {
+  background-color: var(--primary-light, rgba(59, 130, 246, 0.1));
+}
+
+.forum-search-wrapper button:hover svg,
+.forum-search-wrapper .search-button:hover svg {
+  transform: scale(1.1);
+  color: var(--primary);
+}
+
+.forum-search-wrapper button:active svg,
+.forum-search-wrapper .search-button:active svg {
+  transform: scale(0.9);
+}
+
+/* Forum topic card styles */
+.topic-card-popular {
+  border-left: 3px solid var(--primary) !important;
+}
+
+.topic-card-trending {
+  box-shadow: 0 0 0 1px var(--primary-light, rgba(59, 130, 246, 0.2)), 0 2px 4px var(--primary-light, rgba(59, 130, 246, 0.1)) !important;
+}
+
+/* Styling for search input */
+.forum-search-wrapper input {
+  padding-right: 40px !important;
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.forum-search-wrapper input:focus,
+.forum-search-wrapper input:focus-visible {
+  background-image: none !important;
+}
+
+/* Make sure focus states don't cause layout shifts */
+.forum-search-wrapper input:focus-visible,
+.forum-search-wrapper input:focus {
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4)) !important;
+  outline: none !important;
+  border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
 }

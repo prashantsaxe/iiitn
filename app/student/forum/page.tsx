@@ -168,49 +168,64 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
   // };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Forum Discussions</h1>
+    <div className="container mx-auto px-4 py-8">      <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
+        <div className="flex items-center gap-4">
+          <div className="bg-gradient-to-br from-primary/80 to-primary p-3 rounded-lg shadow-sm text-primary-foreground">
+            <MessageSquare className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Forum Discussions</h1>
+            <p className="text-muted-foreground">Share and discuss placement experiences with your peers</p>
+          </div>
+        </div>
         <Link href="/student/forum/new">
-          <Button>
+          <Button className="shadow-sm hover:shadow-md transition-all bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
-            New Topic
+            Start New Discussion
           </Button>
         </Link>
       </div>
 
-      <div className="flex gap-6">
-        {/* Company Sidebar */}
-        <div className="w-64 shrink-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>Companies</CardTitle>
-              <CardDescription>Filter by company</CardDescription>
+      <div className="flex gap-6">        {/* Company Sidebar */}
+        <div className="w-72 shrink-0">
+          <Card className="sticky top-4 shadow-sm border-secondary/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-building-2"><path d="M6 22V2a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v20"/><path d="M12 13V7"/><path d="M10 13h4"/><path d="M10 7h4"/><path d="M6 22H4a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1h3"/><path d="M18 22h3a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-3"/></svg>
+                Companies
+              </CardTitle>
+              <CardDescription>Filter discussions by company</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="px-2 pb-4 pt-0">
               {companiesLoading ? (
-                <div className="space-y-2 p-4">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
+                <div className="space-y-2 p-2">
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-1 max-h-[calc(100vh-250px)] overflow-y-auto pr-1 custom-scrollbar">
                   {companies.length === 0 ? (
-                    <p className="text-sm text-muted-foreground p-4">
-                      No companies found
-                    </p>
+                    <div className="flex flex-col items-center justify-center p-4 text-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mb-2"><path d="M16.5 9.4 7.55 4.24"></path><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><line x1="12" y1="22" x2="12" y2="12"></line></svg>
+                      <p className="text-sm text-muted-foreground">
+                        No companies found
+                      </p>
+                    </div>
                   ) : (
-                    <div>
+                    <div className="px-1">
                       {/* All topics option */}
                       <Button
                         variant={activeCompany === null ? "secondary" : "ghost"}
-                        className="w-full justify-start text-left"
+                        className="w-full justify-between text-left rounded-md mb-1 font-medium"
                         onClick={() => setActiveCompany(null)}
                       >
-                        All Companies
-                        <Badge variant="outline" className="ml-auto">
+                        <span className="flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                          All Companies
+                        </span>
+                        <Badge variant={activeCompany === null ? "secondary" : "outline"} className="ml-auto">
                           {companies.reduce(
                             (acc, company) => acc + company.count,
                             0
@@ -228,11 +243,11 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                               ? "secondary"
                               : "ghost"
                           }
-                          className="w-full justify-start text-left"
+                          className="w-full justify-between text-left rounded-md mb-1"
                           onClick={() => handleCompanyClick(company.name)}
                         >
-                          {company.name}
-                          <Badge variant="outline" className="ml-auto">
+                          <span className="truncate max-w-[160px]">{company.name}</span>
+                          <Badge variant={activeCompany === company.name ? "secondary" : "outline"} className="ml-auto">
                             {company.count}
                           </Badge>
                         </Button>
@@ -246,114 +261,165 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="relative">
+        <div className="flex-1">          {/* Search Bar */}          <form onSubmit={handleSearch} className="mb-6">
+            <div className="relative forum-search-wrapper shadow-sm">
               <Input
                 type="text"
-                placeholder="Search topics..."
+                placeholder="Search forum discussions..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pr-12"
+                className="w-full pl-4 h-11 bg-background dark:bg-background/40 border-secondary/30 focus-visible:border-primary/50"
               />
               <Button
                 type="submit"
-                className="absolute right-1 top-1 rounded-full"
+                variant="ghost"
+                size="icon"
+                className="search-button"
+                aria-label="Search topics"
               >
-                <Search className="w-4 h-4" />
+                <Search className="h-4 w-4" />
               </Button>
             </div>
-          </form>
-
-          {/* Filter indicator */}
+            {searchParams.get("search") && (
+              <div className="mt-2 flex items-center text-xs text-muted-foreground">
+                <span>Searching for: </span>
+                <Badge variant="secondary" className="ml-2 font-normal">
+                  {searchParams.get("search")}
+                </Badge>
+                <Button 
+                  onClick={() => router.push("/student/forum")} 
+                  variant="link" 
+                  className="text-xs h-auto p-0 pl-2"
+                  size="sm"
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+          </form>{/* Filter indicator */}
           {activeCompany && (
-            <div className="mb-4 flex items-center">
-              <p className="text-sm">
-                Filtering by company: <strong>{activeCompany}</strong>
-              </p>
+            <div className="mb-4 flex items-center bg-secondary/20 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 flex-1">
+                <Badge variant="secondary" className="px-2 py-1">
+                  {activeCompany}
+                </Badge>
+                <p className="text-sm text-muted-foreground">
+                  Showing topics from this company
+                </p>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setActiveCompany(null)}
+                className="hover:bg-secondary/30"
               >
                 Clear filter
               </Button>
             </div>
-          )}
-
-          {/* Topics List */}
+          )}          {/* Topics List */}
           {loading && topics.length === 0 ? (
             <Card>
-              <CardContent className="p-6">Loading topics...</CardContent>
+              <CardContent className="p-8 flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-full border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mb-4"></div>
+                <p className="text-muted-foreground">Loading forum discussions...</p>
+              </CardContent>
             </Card>
           ) : error ? (
-            <Card>
-              <CardContent className="text-red-500 p-6">{error}</CardContent>
+            <Card className="border-destructive/30">
+              <CardContent className="p-8 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10 mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-destructive"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <p className="text-destructive font-medium mb-2">Error</p>
+                <p className="text-muted-foreground">{error}</p>
+              </CardContent>
             </Card>
           ) : (
             <div>
               {topics.length === 0 ? (
                 <Card>
-                  <CardContent className="p-6 text-center">
-                    {activeCompany
-                      ? `No topics found for company: ${activeCompany}`
-                      : "No topics found"}
+                  <CardContent className="p-10 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                      <MessageSquare className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-xl font-medium mb-2">No discussions found</h3>
+                    <p className="text-muted-foreground mb-6">
+                      {activeCompany
+                        ? `No topics have been posted for ${activeCompany} yet.`
+                        : "No topics have been posted yet in this forum."}
+                    </p>
+                    <Link href="/student/forum/new">
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Start a discussion
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
-              ) : (
-                topics.map((topic) => (
-                  <Card key={topic._id} className="mb-4">
-                    <CardHeader className="pb-2">
-                      <CardTitle>
+              ) : (                topics.map((topic) => (
+                  <Card 
+                    key={topic._id} 
+                    className={`mb-4 overflow-hidden border group hover:border-primary/30 hover:shadow-md transition-all duration-200
+                      ${topic.likes?.count > 5 ? 'topic-card-popular' : ''}
+                      ${topic.commentsCount > 10 ? 'topic-card-trending' : ''}
+                    `}
+                  >
+                    <CardHeader className="pb-2 pt-4 px-5">
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline" className="px-2 py-1 bg-secondary/30 text-xs font-medium">
+                          {topic.company}
+                        </Badge>
+                        <div className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(topic.createdAt))}{" "}
+                          ago
+                        </div>
+                      </div>
+                      <CardTitle className="mt-2 group-hover:text-primary transition-colors">
                         <Link
                           href={`/student/forum/${topic._id}`}
-                          className="hover:underline"
+                          className="hover:underline text-lg"
                         >
                           {topic.title}
                         </Link>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="mt-1">
                         <div className="flex items-center space-x-2">
-                          <Badge variant="secondary">{topic.company}</Badge>
-                          <Avatar className="h-6 w-6">
-                            <AvatarFallback>
+                          <Avatar className="h-6 w-6 border">
+                            <AvatarFallback className="bg-primary/10 text-primary font-medium">
                               {topic.createdBy.name[0].toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <span>{topic.createdBy.name}</span>
-                          <span className="text-gray-500">
-                            • {formatDistanceToNow(new Date(topic.createdAt))}{" "}
-                            ago
-                          </span>
+                          <span className="font-medium text-sm">{topic.createdBy.name}</span>
                         </div>
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <p className="line-clamp-2">{topic.content}</p>
+                    <CardContent className="pb-2 px-5">
+                      <p className="line-clamp-2 text-muted-foreground">{topic.content}</p>
                       {topic.tags?.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="flex flex-wrap gap-1.5 mt-3">
                           {topic.tags.map((tag) => (
                             <Badge
                               key={tag}
                               variant="outline"
-                              className="text-xs"
+                              className="text-xs px-2 py-0 h-5 bg-secondary/10 hover:bg-secondary/20 transition-colors"
                             >
-                              {tag}
+                              #{tag}
                             </Badge>
                           ))}
                         </div>
                       )}
                     </CardContent>
-                    <CardFooter className="flex justify-between">
+                    <CardFooter className="flex justify-between items-center py-3 px-5 bg-muted/20 border-t">
                       {/* Like count display (not clickable) */}
                       <div className="flex items-center text-muted-foreground">
-                        <ThumbsUp
-                          className={`w-4 h-4 mr-1.5 ${
-                            topic.isLiked ? "fill-blue-600 text-blue-600" : ""
-                          }`}
-                        />
-                        <span>
+                        <div className="bg-background rounded-full p-1 mr-1.5">
+                          <ThumbsUp
+                            className={`w-3.5 h-3.5 ${
+                              topic.isLiked ? "fill-blue-600 text-blue-600" : ""
+                            }`}
+                          />
+                        </div>
+                        <span className="text-sm">
                           {topic.likes?.count || 0}{" "}
                           {topic.likes?.count === 1 ? "Like" : "Likes"}
                         </span>
@@ -362,30 +428,48 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                       {/* Comments link (remains clickable) */}
                       <Link
                         href={`/student/forum/${topic._id}`}
-                        className="flex items-center text-muted-foreground hover:text-blue-500"
+                        className="flex items-center text-muted-foreground hover:text-primary transition-colors group"
                       >
-                        <MessageSquare className="w-4 h-4 mr-1.5" />
-                        {topic.commentsCount || 0}{" "}
-                        {topic.commentsCount === 1 ? "Comment" : "Comments"}
+                        <div className="bg-background rounded-full p-1 mr-1.5 group-hover:bg-primary/10">
+                          <MessageSquare className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-sm">
+                          {topic.commentsCount || 0}{" "}
+                          {topic.commentsCount === 1 ? "Comment" : "Comments"}
+                        </span>
                       </Link>
                     </CardFooter>
                   </Card>
                 ))
-              )}
-              {hasMore && (
+              )}              {hasMore && (
                 <Button
                   onClick={() => fetchTopics()}
                   disabled={loading}
                   variant="outline"
-                  className="w-full mt-4"
+                  className="w-full mt-6 py-6 text-base font-medium relative overflow-hidden group"
                 >
-                  {loading ? "Loading..." : "Load More"}
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="w-5 h-5 border-2 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mr-2"></div>
+                      <span>Loading more discussions...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>View More Discussions</span>
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-center"></span>
+                    </>
+                  )}
                 </Button>
               )}
               {!hasMore && topics.length > 0 && (
-                <p className="text-center text-muted-foreground mt-4">
-                  No more topics to load.
-                </p>
+                <div className="text-center bg-muted/30 rounded-lg py-6 mt-6 border border-dashed">
+                  <p className="text-muted-foreground">
+                    You've reached the end of the discussions.
+                  </p>
+                  <p className="text-sm text-muted-foreground/80 mt-1">
+                    Why not start a new topic?
+                  </p>
+                </div>
               )}
             </div>
           )}

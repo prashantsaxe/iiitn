@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -9,77 +8,95 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
-import useStudentStore from '@/lib/store/userStore'; // Import the Zustand store hook
+import Image from 'next/image';
+import useStudentStore from '@/lib/store/userStore';
+// Remove the import for uploadToCloudinary - we'll handle upload directly
 
 const NewTopicPage = () => {
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
   const [content, setContent] = useState('');
-  const [image, setImage] = useState<File | null>(null); // New state for image
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
-  const { student } = useStudentStore(); // Get student data from Zustand store
+  const { student } = useStudentStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Check if student data is available from Zustand
     if (!student || !student.id || !student.name) {
       setError("User details not found. Please log in again.");
       setLoading(false);
-      return; // Stop submission if user details are missing
+      return;
     }
 
     try {
-      // Use student details from Zustand store
-      const createdBy = {
-        userId: student.id, // Use student ID from store
-        name: student.name, // Use student name from store
-        // Optionally include email if needed and available
-        // email: student.email,
-      };
-
-      // Prepare form data for image upload
+      // Create FormData to handle the file upload
       const formData = new FormData();
       formData.append('title', title);
       formData.append('company', company);
       formData.append('content', content);
-      formData.append('createdBy', JSON.stringify(createdBy)); // Stringify the object
+      
+      // Add the creator info
+      formData.append('createdBy', JSON.stringify({
+        userId: student.id,
+        name: student.name,
+      }));
+      
+      // Only append image if one was selected
       if (image) {
-        formData.append('image', image); // Append the image file
+        formData.append('image', image);
       }
 
-      // When sending FormData, axios usually sets the correct Content-Type automatically.
-      // Do not manually set 'Content-Type': 'application/json' when sending FormData.
-      await axios.post('/api/forum', formData);
-      // Removed explicit headers and method as axios handles FormData correctly
+      // Send form data to your backend API
+      await axios.post('/api/forum', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-      router.push('/student/forum'); // Redirect to the forum page after successful creation
+      router.push('/student/forum');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to create topic');
+      console.error("Error creating topic:", err);
     } finally {
       setLoading(false);
     }
   };
 
   // Handle image selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-    } else {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
       setImage(null);
+      setImagePreview(null);
+      return;
     }
+
+    // Set the file for later upload
+    setImage(file);
+
+    // Create a preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
+  // Remove image handler
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/student/forum"> {/* Updated link back to forum */}
+      <Link href="/student/forum">
         <Button variant="ghost" className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Forum
@@ -91,57 +108,96 @@ const NewTopicPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="grid gap-4">
-              <div>
+            <div className="grid gap-4">              <div>
                 <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter topic title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
+                <div className="relative text-input-wrapper" style={{ marginTop: "4px", marginBottom: "4px" }}>
+                  <Input
+                    id="title"
+                    placeholder="Enter topic title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>              <div>
                 <Label htmlFor="company">Company</Label>
-                <Input
-                  id="company"
-                  placeholder="Enter company name"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
+                <div className="relative text-input-wrapper" style={{ marginTop: "4px", marginBottom: "4px" }}>
+                  <Input
+                    id="company"
+                    placeholder="Enter company name"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>              <div>
                 <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  placeholder="Write your topic content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                />
+                <div className="relative text-input-wrapper" style={{ marginTop: "4px", marginBottom: "4px" }}>
+                  <Textarea
+                    id="content"
+                    placeholder="Write your topic content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              {/* Image Upload */}
+              
+              {/* Image Upload UI */}
               <div>
-                <Label htmlFor="image">Image (optional)</Label>
-                <Input
-                  type="file"
-                  id="image"
-                  accept="image/*" // Accept only image files
-                  onChange={handleImageChange}
-                />
-                {image && (
-                  <div className="mt-2">
-                    <p>Selected Image: {image.name}</p>
+                <Label htmlFor="image" className="mb-2 block">Image (optional)</Label>
+                {!imagePreview ? (
+                  <div className="mt-1 flex items-center">
+                    <label htmlFor="image" className="cursor-pointer flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-md p-4 w-full hover:border-blue-500 transition-colors">
+                      <ImageIcon className="h-6 w-6 text-gray-400" />
+                      <span className="text-sm text-gray-500">Click to upload an image</span>
+                      <Input
+                        type="file"
+                        id="image"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div className="mt-2 relative">
+                    <div className="relative h-48 w-full rounded-md overflow-hidden">
+                      <Image 
+                        src={imagePreview}
+                        alt="Preview"
+                        fill 
+                        style={{ objectFit: 'contain' }}
+                        className="rounded-md"
+                      />
+                    </div>
+                    <div className="mt-2 flex justify-between items-center">
+                      <p className="text-sm text-gray-500">
+                        {image ? 'Image selected' : 'Preview only'}
+                      </p>
+                      <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="sm" 
+                        onClick={handleRemoveImage}
+                      >
+                        Remove
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
-              <Button type="submit" disabled={loading || !student}> {/* Disable button if loading or no student data */}
+
+              <Button 
+                type="submit" 
+                disabled={loading || !student}
+                className="mt-2"
+              >
                 {loading ? 'Creating...' : 'Create Topic'}
               </Button>
-              {error && <p className="text-red-500 mt-2">{error}</p>} {/* Added margin top */}
-              {!student && <p className="text-yellow-600 mt-2">Loading user details or not logged in...</p>} {/* Indicate if student data isn't ready */}
+              
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+              {!student && <p className="text-yellow-600 mt-2">Loading user details or not logged in...</p>}
             </div>
           </form>
         </CardContent>

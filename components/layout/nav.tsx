@@ -79,7 +79,7 @@ export function Nav() {
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
             <span className="hidden text-lg font-medium tracking-tight sm:inline-block">
-              Campus System
+              IIIT NAGPUR
             </span>
           </Link>
         </div>

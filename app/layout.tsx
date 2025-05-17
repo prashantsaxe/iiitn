@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Nav } from "@/components/layout/nav";
 import SessionProvider from "@/components/session-provider";
+import FocusRingFix from "@/components/focus-ring-fix";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,8 +29,8 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
-          <SessionProvider>
+        >          <SessionProvider>
+            <FocusRingFix />
             <div className="relative flex min-h-screen flex-col">
               <Nav />
               <div className="flex-1">{children}</div>
