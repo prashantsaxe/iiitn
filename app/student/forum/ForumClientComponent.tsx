@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import { MessageSquare, Search, Plus, ThumbsUp } from "lucide-react";
-import axios from "axios";
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -20,6 +17,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MessageSquare, Search, Plus, ThumbsUp } from "lucide-react";
+import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
 
 // Types
 interface Topic {
@@ -50,36 +50,42 @@ interface ForumPageProps {
   userId?: string;
 }
 
-const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
-  // States
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companiesLoading, setCompaniesLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastCreatedAt, setLastCreatedAt] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [searchInput, setSearchInput] = useState("");
-  const [activeCompany, setActiveCompany] = useState<string | null>(null);
-
+const ForumClientComponent: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Fetch topics with Axios
-  const fetchTopics = useCallback(
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loadingTopics, setLoadingTopics] = useState(true);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastCreatedAt, setLastCreatedAt] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [searchInput, setSearchInput] = useState(searchParams?.get('search') || "");
+  const [activeCompany, setActiveCompany] = useState<string | null>(searchParams?.get('company') || null);
+  const [newPost, setNewPost] = useState(""); // Add this state if you want a post input
+
+
+  const fetchTopicsCallback = useCallback(
     async (refresh = false) => {
       try {
-        setLoading(true);
+        setLoadingTopics(true);
         const params = new URLSearchParams();
         params.append("limit", "10");
-        if (lastCreatedAt && !refresh) {
-          params.append("lastCreatedAt", lastCreatedAt);
+        
+        const currentLastCreatedAt = refresh ? null : lastCreatedAt;
+        if (currentLastCreatedAt) {
+          params.append("lastCreatedAt", currentLastCreatedAt);
         }
-        if (searchParams && searchParams.get("search")) {
-          params.append("search", searchParams.get("search") || "");
+        
+        const currentSearch = searchParams?.get("search") || '';
+        if (currentSearch) {
+          params.append("search", currentSearch);
         }
-        if (activeCompany) {
-          params.append("company", activeCompany);
+        
+        const currentCompany = activeCompany || '';
+        if (currentCompany) {
+          params.append("company", currentCompany);
         }
 
         const response = await axios.get("/api/forum", { params });
@@ -97,78 +103,74 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         setError(err.message || "Failed to load topics");
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoadingTopics(false);
       }
     },
-    [lastCreatedAt, searchParams, activeCompany]
+    [lastCreatedAt, searchParams, activeCompany] // Dependencies for useCallback
   );
 
-  // Fetch companies
-  const fetchCompanies = async () => {
+  const fetchCompaniesCallback = useCallback(async () => {
     try {
-      setCompaniesLoading(true);
+      setLoadingCompanies(true);
       const response = await axios.get("/api/forum/companies");
       setCompanies(response.data.companies || []);
     } catch (err) {
       console.error("Failed to load companies:", err);
     } finally {
-      setCompaniesLoading(false);
+      setLoadingCompanies(false);
     }
-  };
+  }, []); // No dependencies if it doesn't rely on props/state that change
 
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    fetchCompaniesCallback();
+  }, [fetchCompaniesCallback]);
 
   useEffect(() => {
-    fetchTopics(true);
-  }, [fetchTopics, activeCompany]);
+    // Update internal state if URL params change externally (e.g. browser back/forward)
+    setSearchInput(searchParams?.get('search') || "");
+    setActiveCompany(searchParams?.get('company') || null);
+    fetchTopicsCallback(true); // Refresh topics when searchParams or activeCompany changes
+  }, [searchParams, activeCompany, fetchTopicsCallback]);
 
-  // Handle search
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams?.toString());
     if (searchInput) {
       params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    // Preserve company filter if active
+    if (activeCompany) {
+        params.set("company", activeCompany);
     }
     router.push(`/student/forum?${params.toString()}`);
   };
 
-  // Handle company filter
-  const handleCompanyClick = (companyName: string) => {
-    if (activeCompany === companyName) {
-      setActiveCompany(null); // Clear filter if already active
+  const handleCompanyClick = (companyName: string | null) => {
+    const params = new URLSearchParams(searchParams?.toString());
+    if (companyName) {
+      params.set("company", companyName);
     } else {
-      setActiveCompany(companyName);
+      params.delete("company");
     }
-    setLastCreatedAt(null); // Reset pagination when changing filter
+    // Preserve search query if active
+    if (searchInput) {
+        params.set("search", searchInput);
+    }
+    router.push(`/student/forum?${params.toString()}`);
+  };
+  
+  const handlePostSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle post submission logic
+    setNewPost(""); // Reset after submit
   };
 
-  // // Handle like
-  // const handleLike = async (topicId: string) => {
-  //   try {
-  //     const response = await axios.post(`/api/forum/topics/${topicId}/vote`, {
-  //       userId,
-  //     });
-
-  //     // Update the topic in the list with the updated like status
-  //     if (response.data.topic) {
-  //       setTopics(prevTopics =>
-  //         prevTopics.map(topic =>
-  //           topic._id === topicId ? { ...topic,
-  //             likes: response.data.topic.likes,
-  //             isLiked: response.data.topic.isLiked
-  //           } : topic
-  //         )
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error(`Error liking topic ${topicId}:`, err);
-  //   }
-  // };
-
   return (
-    <div className="container mx-auto px-4 py-8">      <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
         <div className="flex items-center gap-4">
           <div className="bg-gradient-to-br from-primary/80 to-primary p-3 rounded-lg shadow-sm text-primary-foreground">
             <MessageSquare className="w-6 h-6" />
@@ -186,7 +188,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         </Link>
       </div>
 
-      <div className="flex gap-6">        {/* Company Sidebar */}
+      <div className="flex gap-6">
+        {/* Company Sidebar */}
         <div className="w-72 shrink-0">
           <Card className="sticky top-4 shadow-sm border-secondary/20">
             <CardHeader className="pb-3">
@@ -197,7 +200,7 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
               <CardDescription>Filter discussions by company</CardDescription>
             </CardHeader>
             <CardContent className="px-2 pb-4 pt-0">
-              {companiesLoading ? (
+              {loadingCompanies ? (
                 <div className="space-y-2 p-2">
                   <Skeleton className="h-9 w-full rounded-md" />
                   <Skeleton className="h-9 w-full rounded-md" />
@@ -215,11 +218,10 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                     </div>
                   ) : (
                     <div className="px-1">
-                      {/* All topics option */}
                       <Button
                         variant={activeCompany === null ? "secondary" : "ghost"}
                         className="w-full justify-between text-left rounded-md mb-1 font-medium"
-                        onClick={() => setActiveCompany(null)}
+                        onClick={() => handleCompanyClick(null)}
                       >
                         <span className="flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
@@ -232,9 +234,7 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                           )}
                         </Badge>
                       </Button>
-
                       <Separator className="my-2" />
-
                       {companies.map((company) => (
                         <Button
                           key={company.name}
@@ -261,7 +261,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">          {/* Search Bar */}          <form onSubmit={handleSearch} className="mb-6">
+        <div className="flex-1">
+          <form onSubmit={handleSearch} className="mb-6">
             <div className="relative forum-search-wrapper shadow-sm">
               <Input
                 type="text"
@@ -287,7 +288,11 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                   {searchParams.get("search")}
                 </Badge>
                 <Button 
-                  onClick={() => router.push("/student/forum")} 
+                  onClick={() => {
+                      const params = new URLSearchParams(searchParams.toString());
+                      params.delete("search");
+                      router.push(`/student/forum?${params.toString()}`);
+                  }} 
                   variant="link" 
                   className="text-xs h-auto p-0 pl-2"
                   size="sm"
@@ -296,7 +301,7 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                 </Button>
               </div>
             )}
-          </form>{/* Filter indicator */}
+          </form>
           {activeCompany && (
             <div className="mb-4 flex items-center bg-secondary/20 rounded-lg px-3 py-2">
               <div className="flex items-center gap-2 flex-1">
@@ -310,14 +315,14 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setActiveCompany(null)}
+                onClick={() => handleCompanyClick(null)}
                 className="hover:bg-secondary/30"
               >
                 Clear filter
               </Button>
             </div>
-          )}          {/* Topics List */}
-          {loading && topics.length === 0 ? (
+          )}
+          {loadingTopics && topics.length === 0 ? (
             <Card>
               <CardContent className="p-8 flex flex-col items-center justify-center">
                 <div className="w-12 h-12 rounded-full border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mb-4"></div>
@@ -356,7 +361,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                     </Link>
                   </CardContent>
                 </Card>
-              ) : (                topics.map((topic) => (
+              ) : (
+                topics.map((topic) => (
                   <Card 
                     key={topic._id} 
                     className={`mb-4 overflow-hidden border group hover:border-primary/30 hover:shadow-md transition-all duration-200
@@ -410,7 +416,6 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                       )}
                     </CardContent>
                     <CardFooter className="flex justify-between items-center py-3 px-5 bg-muted/20 border-t">
-                      {/* Like count display (not clickable) */}
                       <div className="flex items-center text-muted-foreground">
                         <div className="bg-background rounded-full p-1 mr-1.5">
                           <ThumbsUp
@@ -424,8 +429,6 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                           {topic.likes?.count === 1 ? "Like" : "Likes"}
                         </span>
                       </div>
-
-                      {/* Comments link (remains clickable) */}
                       <Link
                         href={`/student/forum/${topic._id}`}
                         className="flex items-center text-muted-foreground hover:text-primary transition-colors group"
@@ -441,14 +444,15 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                     </CardFooter>
                   </Card>
                 ))
-              )}              {hasMore && (
+              )}
+              {hasMore && (
                 <Button
-                  onClick={() => fetchTopics()}
-                  disabled={loading}
+                  onClick={() => fetchTopicsCallback()}
+                  disabled={loadingTopics}
                   variant="outline"
                   className="w-full mt-6 py-6 text-base font-medium relative overflow-hidden group"
                 >
-                  {loading ? (
+                  {loadingTopics ? (
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mr-2"></div>
                       <span>Loading more discussions...</span>
@@ -473,10 +477,20 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
               )}
             </div>
           )}
+          <form onSubmit={handlePostSubmit}>
+            <Input
+              type="text"
+              value={newPost}
+              onChange={e => setNewPost(e.target.value)}
+              placeholder="Write a new post"
+              className="mb-4"
+            />
+            <Button type="submit">Post</Button>
+          </form>
         </div>
       </div>
     </div>
   );
 };
 
-export default ForumPage;
+export default ForumClientComponent;
