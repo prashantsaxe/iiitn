@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,68 +20,38 @@ export function Nav() {
 
   const isActive = (path: string) => pathname === path;
 
-  // Return null to render nothing when user is logged in
-  if (isLoggedIn) return null;
-
   return (
-    <header className="backdrop-blur-xl bg-white/80 dark:bg-black/80 sticky top-0 z-40 w-full border-b border-gray-200/50 dark:border-gray-800/50">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo Section */}
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <div className="container flex h-16 items-center px-4 sm:px-6">
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="hidden text-lg font-medium tracking-tight sm:inline-block">
-              IIIT NAGPUR
-            </span>
+            <span className="font-bold text-xl">IIITN</span>
           </Link>
         </div>
-
-        {/* Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/"
-            className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              isActive("/")
-                ? "text-primary font-semibold"
-                : "text-foreground/70"
+        
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <nav className="flex items-center space-x-2">
+            {session ? (
+              <div className="flex items-center space-x-4">
+                <p className="text-sm hidden sm:inline-block">
+                  {session.user?.email}
+                </p>
+                <button
+                  onClick={() => signOut()}
+                  className="px-3 py-1.5 text-sm rounded-md border hover:bg-accent transition-colors"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link 
+                href="/login"
+                className="px-3 py-1.5 text-sm rounded-md border hover:bg-accent transition-colors"
+              >
+                Sign in
+              </Link>
             )}
-          >
-            Home
-          </Link>
-          <Link
-            href="/about"
-            className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              isActive("/about")
-                ? "text-primary font-semibold"
-                : "text-foreground/70"
-            )}
-          >
-            About
-          </Link>
-
-          <Link
-            href="/contact"
-            className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              isActive("/contact")
-                ? "text-primary font-semibold"
-                : "text-foreground/70"
-            )}
-          >
-            Contact
-          </Link>
-        </nav>
-
-        {/* Login button */}
-        <div className="flex items-center">
-          <Button
-            asChild
-            size="sm"
-            className="rounded-full px-5 bg-primary hover:bg-primary/90 transition-all shadow-sm"
-          >
-            <Link href="/login">Login</Link>
-          </Button>
+          </nav>
         </div>
       </div>
     </header>
