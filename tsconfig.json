@@ -25,3 +25,4 @@
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/student/viewMySubmission/page.tsx"],
   "exclude": ["node_modules"]
 }
+// Look for JSON syntax issues, especially unquoted property names

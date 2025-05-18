@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
@@ -50,7 +50,8 @@ interface ForumPageProps {
   userId?: string;
 }
 
-const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
+// Create a client component that uses searchParams
+function ForumContent() {
   // States
   const [topics, setTopics] = useState<Topic[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -144,31 +145,9 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
     setLastCreatedAt(null); // Reset pagination when changing filter
   };
 
-  // // Handle like
-  // const handleLike = async (topicId: string) => {
-  //   try {
-  //     const response = await axios.post(`/api/forum/topics/${topicId}/vote`, {
-  //       userId,
-  //     });
-
-  //     // Update the topic in the list with the updated like status
-  //     if (response.data.topic) {
-  //       setTopics(prevTopics =>
-  //         prevTopics.map(topic =>
-  //           topic._id === topicId ? { ...topic,
-  //             likes: response.data.topic.likes,
-  //             isLiked: response.data.topic.isLiked
-  //           } : topic
-  //         )
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error(`Error liking topic ${topicId}:`, err);
-  //   }
-  // };
-
   return (
-    <div className="container mx-auto px-4 py-8">      <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
         <div className="flex items-center gap-4">
           <div className="bg-gradient-to-br from-primary/80 to-primary p-3 rounded-lg shadow-sm text-primary-foreground">
             <MessageSquare className="w-6 h-6" />
@@ -186,7 +165,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         </Link>
       </div>
 
-      <div className="flex gap-6">        {/* Company Sidebar */}
+      <div className="flex gap-6">
+        {/* Company Sidebar */}
         <div className="w-72 shrink-0">
           <Card className="sticky top-4 shadow-sm border-secondary/20">
             <CardHeader className="pb-3">
@@ -261,7 +241,9 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">          {/* Search Bar */}          <form onSubmit={handleSearch} className="mb-6">
+        <div className="flex-1">
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="mb-6">
             <div className="relative forum-search-wrapper shadow-sm">
               <Input
                 type="text"
@@ -296,7 +278,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                 </Button>
               </div>
             )}
-          </form>{/* Filter indicator */}
+          </form>
+          {/* Filter indicator */}
           {activeCompany && (
             <div className="mb-4 flex items-center bg-secondary/20 rounded-lg px-3 py-2">
               <div className="flex items-center gap-2 flex-1">
@@ -316,7 +299,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                 Clear filter
               </Button>
             </div>
-          )}          {/* Topics List */}
+          )}
+          {/* Topics List */}
           {loading && topics.length === 0 ? (
             <Card>
               <CardContent className="p-8 flex flex-col items-center justify-center">
@@ -356,7 +340,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                     </Link>
                   </CardContent>
                 </Card>
-              ) : (                topics.map((topic) => (
+              ) : (
+                topics.map((topic) => (
                   <Card 
                     key={topic._id} 
                     className={`mb-4 overflow-hidden border group hover:border-primary/30 hover:shadow-md transition-all duration-200
@@ -441,7 +426,8 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
                     </CardFooter>
                   </Card>
                 ))
-              )}              {hasMore && (
+              )}
+              {hasMore && (
                 <Button
                   onClick={() => fetchTopics()}
                   disabled={loading}
@@ -477,6 +463,34 @@ const ForumPage: React.FC<ForumPageProps> = ({ userId = "guest" }) => {
       </div>
     </div>
   );
-};
+}
 
-export default ForumPage;
+// Create a wrapper component for the page
+export default function ForumPage({ userId = "guest" }: { userId?: string }) {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8 bg-card rounded-xl p-5 shadow-md border border-secondary/10">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-primary/80 to-primary p-3 rounded-lg shadow-sm text-primary-foreground">
+              <MessageSquare className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Forum Discussions</h1>
+              <p className="text-muted-foreground">Share and discuss placement experiences with your peers</p>
+            </div>
+          </div>
+          <div className="h-10 w-40 bg-muted animate-pulse rounded-md"></div>
+        </div>
+        <div className="w-full h-[500px] flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mb-4"></div>
+            <p className="text-muted-foreground">Loading forum...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ForumContent />
+    </Suspense>
+  );
+}
