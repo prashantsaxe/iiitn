@@ -60,10 +60,29 @@ const ProfilePage = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
-  // console.log(student);
+
+  // Debug: log student data
+  useEffect(() => {
+    console.log("Student data in profile page:", student);
+  }, [student]);
+
+  // Fetch student profile if not loaded
+  useEffect(() => {
+    const fetchStudent = async () => {
+      if (!student && status === "authenticated") {
+        try {
+          const res = await axios.get("/api/student/profile");
+          setStudent(res.data);
+        } catch (err) {
+          console.error("Failed to fetch student profile:", err);
+        }
+      }
+    };
+    fetchStudent();
+  }, [student, status, setStudent]);
+
   // Initialize editable fields once student data is available
   useEffect(() => {
-   
     if (student) {
       setEditableFields({
         hometown: student.hometown || "",
@@ -73,18 +92,18 @@ const ProfilePage = () => {
         "socialMedia.github": student.socialMedia?.github || "",
         "socialMedia.twitter": student.socialMedia?.twitter || "",
         "socialMedia.portfolio": student.socialMedia?.portfolio || "",
-        "education.tenthMarks": 
-        student.education?.tenthMarks !== undefined && 
-        student.education.tenthMarks !== null &&
-        !isNaN(Number(student.education.tenthMarks)) 
-          ? student.education.tenthMarks 
-          : 0,
-      "education.twelfthMarks": 
-        student.education?.twelfthMarks !== undefined && 
-        student.education.twelfthMarks !== null &&
-        !isNaN(Number(student.education.twelfthMarks)) 
-          ? student.education.twelfthMarks 
-          : 0,
+        "education.tenthMarks":
+          student.education?.tenthMarks !== undefined &&
+          student.education.tenthMarks !== null &&
+          !isNaN(Number(student.education.tenthMarks))
+            ? student.education.tenthMarks
+            : 0,
+        "education.twelfthMarks":
+          student.education?.twelfthMarks !== undefined &&
+          student.education.twelfthMarks !== null &&
+          !isNaN(Number(student.education.twelfthMarks))
+            ? student.education.twelfthMarks
+            : 0,
       });
 
       // First show welcome animation, then reveal the profile
@@ -97,13 +116,26 @@ const ProfilePage = () => {
   }, [student]);
 
   // Auth and student data check
-  if (status === "loading" || !student || pageLoading || !mounted) {
+  if (status === "loading" || pageLoading || !mounted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background pb-12">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-12 w-12 text-primary animate-spin" />
           <p className="text-lg text-muted-foreground animate-pulse">
             Loading profile...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show a message if student data is missing
+  if (!student) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background pb-12">
+        <div className="flex flex-col items-center space-y-4">
+          <p className="text-lg text-destructive">
+            Student profile data not found. Please try reloading or contact support.
           </p>
         </div>
       </div>
@@ -168,11 +200,11 @@ const ProfilePage = () => {
       const photoUrl = response.data.url;
       handleChange("photo", photoUrl);
       await axios.put("/api/student/profile", {
-        photo: photoUrl
+        photo: photoUrl,
       });
       setStudent({
         ...student,
-        photo: photoUrl
+        photo: photoUrl,
       });
       toast.success("Profile photo updated successfully");
     } catch (error) {
@@ -606,8 +638,10 @@ const ProfilePage = () => {
                           <Input
                             type="number"
                             value={
-                              editableFields["education.tenthMarks"] === null || 
-                              Number.isNaN(Number(editableFields["education.tenthMarks"]))
+                              editableFields["education.tenthMarks"] === null ||
+                              Number.isNaN(
+                                Number(editableFields["education.tenthMarks"])
+                              )
                                 ? ""
                                 : editableFields["education.tenthMarks"]
                             }
@@ -638,8 +672,11 @@ const ProfilePage = () => {
                         {isEditing ? (
                           <Input
                             value={
-                              editableFields["education.twelfthMarks"] === null || 
-                              Number.isNaN(Number(editableFields["education.twelfthMarks"]))
+                              editableFields["education.twelfthMarks"] ===
+                                null ||
+                              Number.isNaN(
+                                Number(editableFields["education.twelfthMarks"])
+                              )
                                 ? ""
                                 : editableFields["education.twelfthMarks"]
                             }

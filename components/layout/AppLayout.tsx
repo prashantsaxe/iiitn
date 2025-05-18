@@ -3,7 +3,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Nav } from './nav';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from './sidebar';
+import Chatbot from '../shared/Chatbot';
 
 interface AppLayoutProps {
     children: ReactNode;
@@ -43,9 +44,8 @@ export function AppLayout({ children }: AppLayoutProps) {
             window.removeEventListener('storage', storageHandler);
             window.removeEventListener('sidebarToggle', checkCollapsedState);
             observer.disconnect();
-        };
-    }, []);
-
+        };    }, []);
+    
     return (
         <div className="flex min-h-screen flex-col">
             <Nav />
@@ -60,6 +60,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                     </div>
                 </main>
             </div>
+            {/* Add Chatbot component */}
+            <Chatbot />
         </div>
     );
 }
