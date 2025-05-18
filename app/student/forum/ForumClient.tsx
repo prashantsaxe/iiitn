@@ -1,0 +1,3 @@
+'use client';
+
+// ...paste the entire content of your current page.tsx here...
