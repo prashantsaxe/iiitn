@@ -22,17 +22,17 @@ const ForumClient = () => {
       });
   }, []);
 
-const handlePostSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePostSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios.post<Post>('/api/posts', { content: newPost })
-        .then(response => {
-            setPosts([...posts, response.data]);
-            setNewPost('');
-        })
-        .catch(error => {
-            console.error('Error creating post:', error);
-        });
-};
+      .then(response => {
+        setPosts([...posts, response.data]);
+        setNewPost('');
+      })
+      .catch(error => {
+        console.error('Error creating post:', error);
+      });
+  };
 
   return (
     <div>

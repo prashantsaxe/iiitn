@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ForumClientComponent from './ForumClientComponent'; // Ensure this path and filename are correct
+import ForumClient from './ForumClient'; // Ensure this path and filename are correct
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Loading skeleton for the forum page
@@ -34,11 +34,9 @@ function ForumPageLoadingSkeleton() {
 }
 
 export default function ForumPage() {
-  // This component is a Server Component.
-  // It uses Suspense to handle the loading state of the Client Component.
   return (
     <Suspense fallback={<ForumPageLoadingSkeleton />}>
-      <ForumClientComponent />
+      <ForumClient />
     </Suspense>
   );
 }
