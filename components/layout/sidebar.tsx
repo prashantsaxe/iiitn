@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
@@ -60,11 +60,11 @@ interface SidebarProps {
     className?: string;
 }
 
-export function Sidebar({ className }: SidebarProps) {
+const Sidebar = ({ className }: SidebarProps) => {
     const { data: session } = useSession();
     const pathname = usePathname();
     const router = useRouter();
-    const [expanded, setExpanded] = useState(false); // Rename open to expanded for clarity
+    const [expanded, setExpanded] = useState(true);
     const [collapsed, setCollapsed] = useState(true); // Default to collapsed
     const isDesktop = useMediaQuery('(min-width: 1024px)');
     const { theme, setTheme } = useTheme();
@@ -566,4 +566,6 @@ export function Sidebar({ className }: SidebarProps) {
             </>
         </TooltipProvider>
     );
-}
+};
+
+export default Sidebar;

@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Nav } from './nav';
-import { Sidebar } from './Sidebar';
+import Sidebar from '@/components/layout/Sidebar'; // Corrected import path
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface AppLayoutProps {
